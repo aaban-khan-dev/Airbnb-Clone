@@ -28,15 +28,30 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   });
 
   if (!res.ok) {
-    // FastAPI puts error messages in { "detail": "..." }
     const data = await res.json().catch(() => null);
-    const message =
-      typeof data?.detail === "string" ? data.detail : `Request failed (${res.status})`;
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, errorMessage(data?.detail, res.status));
   }
 
   if (res.status === 204) return undefined as T; // "No Content" responses have no body
   return res.json() as Promise<T>;
+}
+
+type ValidationError = { loc: (string | number)[]; msg: string };
+
+// FastAPI sends { "detail": "message" } for our own errors, and
+// { "detail": [{ loc: ["body", "title"], msg: "..." }, ...] } when validation fails
+function errorMessage(detail: unknown, status: number): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return (detail as ValidationError[])
+      .map((error) => {
+        const field = error.loc.filter((part) => typeof part === "string" && part !== "body").at(-1);
+        const text = error.msg.replace(/^Value error, /, "");
+        return field ? `${String(field).replaceAll("_", " ")}: ${text}` : text;
+      })
+      .join(" · ");
+  }
+  return `Request failed (${status})`;
 }
 
 export const api = {

@@ -62,7 +62,7 @@ def create_booking(db: Session, guest: User, data: BookingCreate) -> BookingOut:
 def list_guest_bookings(db: Session, guest: User) -> list[BookingOut]:
     """All of a guest's bookings, newest stay first. The frontend splits them into tabs."""
     bookings = db.scalars(
-        _with_details(select(Booking))
+        with_booking_details(select(Booking))
         .where(Booking.guest_id == guest.id)
         .order_by(Booking.check_in.desc())
     ).all()
@@ -92,7 +92,7 @@ def cancel_booking(db: Session, booking_id: int, guest: User) -> BookingOut:
     return to_booking_out(booking)
 
 
-def _with_details(query):
+def with_booking_details(query):
     """Load each booking's listing (with photos and host) and guest in a few queries."""
     return query.options(
         joinedload(Booking.listing).selectinload(Listing.images),
@@ -102,7 +102,7 @@ def _with_details(query):
 
 
 def _load(db: Session, booking_id: int) -> Booking | None:
-    return db.scalar(_with_details(select(Booking)).where(Booking.id == booking_id))
+    return db.scalar(with_booking_details(select(Booking)).where(Booking.id == booking_id))
 
 
 def to_booking_out(booking: Booking) -> BookingOut:

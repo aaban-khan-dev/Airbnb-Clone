@@ -12,6 +12,7 @@ type UserContextValue = {
   currentUser: User | null;
   loading: boolean;
   switchUser: (userId: number) => void;
+  refreshUsers: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextValue | null>(null);
@@ -54,8 +55,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     [users],
   );
 
+  // Reload users after something changes them, e.g. creating a first listing makes you a host
+  const refreshUsers = useCallback(async () => {
+    const allUsers = await api.get<User[]>("/api/users");
+    setUsers(allUsers);
+    setCurrentUser((current) => allUsers.find((u) => u.id === current?.id) ?? current);
+  }, []);
+
   return (
-    <UserContext.Provider value={{ users, currentUser, loading, switchUser }}>
+    <UserContext.Provider value={{ users, currentUser, loading, switchUser, refreshUsers }}>
       {children}
     </UserContext.Provider>
   );

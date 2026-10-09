@@ -3,6 +3,7 @@ from datetime import date
 from sqlalchemy import ColumnElement, func, or_, select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
+from app.core.constants import CATEGORIES, PROPERTY_TYPES
 from app.models import Amenity, Listing, Review
 from app.schemas.listing import (
     AmenityOut,
@@ -104,18 +105,14 @@ def search_listings(db: Session, params: ListingSearchParams) -> ListingPage:
 
 def get_filter_options(db: Session) -> FilterOptions:
     active = Listing.is_active.is_(True)
-    categories = db.scalars(select(Listing.category).where(active).distinct().order_by(Listing.category))
-    property_types = db.scalars(
-        select(Listing.property_type).where(active).distinct().order_by(Listing.property_type)
-    )
     amenities = db.scalars(select(Amenity).order_by(Amenity.name))
     min_price, max_price = db.execute(
         select(func.min(Listing.price_per_night), func.max(Listing.price_per_night)).where(active)
     ).one()
 
     return FilterOptions(
-        categories=list(categories),
-        property_types=list(property_types),
+        categories=CATEGORIES,
+        property_types=PROPERTY_TYPES,
         amenities=[AmenityOut.model_validate(a) for a in amenities],
         min_price=min_price or 0,
         max_price=max_price or 0,

@@ -119,3 +119,38 @@ export type Booking = {
   status: "confirmed" | "cancelled";
   created_at: string;
 };
+
+// Values of the host's create/edit listing form (matches the backend's ListingWrite)
+export type ListingFormValues = {
+  title: string;
+  description: string;
+  property_type: string;
+  category: string;
+  city: string;
+  state: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  price_per_night: number;
+  cleaning_fee: number;
+  max_guests: number;
+  bedrooms: number;
+  beds: number;
+  bathrooms: number;
+  image_urls: string[];
+  amenity_ids: number[];
+};
+
+export type HostListingSummary = {
+  id: number;
+  title: string;
+  city: string;
+  state: string;
+  property_type: string;
+  price_per_night: number;
+  cover_image_url: string | null;
+  rating: number | null;
+  review_count: number;
+  upcoming_bookings: number;
+  total_earnings: number;
+};
