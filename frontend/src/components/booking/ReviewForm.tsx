@@ -55,12 +55,12 @@ export function ReviewForm({ bookingId, onReviewed }: { bookingId: number; onRev
         rows={4}
         maxLength={1000}
         placeholder="Tell future guests what you loved and what could be better"
-        className="mt-4 w-full rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+        className="mt-4 w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
       />
       <button
         type="submit"
         disabled={submitting}
-        className="mt-3 rounded-lg bg-ink px-6 py-3 font-semibold text-white disabled:opacity-50"
+        className="mt-3 rounded-lg bg-ink px-6 py-3 font-semibold text-canvas disabled:opacity-50"
       >
         {submitting ? "Posting…" : "Post review"}
       </button>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCurrentUser } from "@/context/UserContext";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -33,7 +34,7 @@ export function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl bg-white py-2 text-sm shadow-card ring-1 ring-black/5">
+        <div className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl bg-canvas py-2 text-sm shadow-card ring-1 ring-line">
           {currentUser && (
             <p className="px-4 py-2 text-xs text-muted">
               Logged in as <span className="font-semibold text-ink">{currentUser.name}</span>
@@ -65,6 +66,11 @@ export function UserMenu() {
           >
             Account
           </button>
+
+          <div className="px-4 py-2">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Appearance</p>
+            <ThemeSwitcher />
+          </div>
 
           <Divider />
 

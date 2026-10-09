@@ -11,6 +11,7 @@ import { BookingCard } from "@/components/listing-detail/BookingCard";
 import { HeartButton } from "@/components/listings/HeartButton";
 import { HostSection } from "@/components/listing-detail/HostSection";
 import { LocationMap } from "@/components/listing-detail/LocationMap";
+import { MobileReserveBar } from "@/components/listing-detail/MobileReserveBar";
 import { PhotoGrid } from "@/components/listing-detail/PhotoGrid";
 import { ReviewsSection } from "@/components/listing-detail/ReviewsSection";
 import { Avatar } from "@/components/ui/Avatar";
@@ -114,31 +115,52 @@ function ListingPageContent() {
 
   const l = state.listing;
   const location = `${l.city}, ${l.state}, ${l.country}`;
+
+  // Shared by the desktop booking card and the mobile reserve bar
+  const booking = {
+    pricePerNight: l.price_per_night,
+    maxGuests: l.max_guests,
+    range,
+    onRangeChange: setRange,
+    guests: Math.min(guests, l.max_guests),
+    onGuestsChange: setGuests,
+    isNightBlocked,
+    quote,
+    quoteError,
+    quoteLoading,
+    onReserve: reserve,
+    isOwnListing: currentUser?.id === l.host.id,
+  };
   const isGuestFavourite = l.rating !== null && l.rating >= 4.8 && l.review_count >= 3;
 
   return (
-    <Container className="max-w-[1280px] pt-6">
-      {/* Title row */}
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <h1 className="text-[26px] font-semibold">{l.title}</h1>
-        <div className="flex shrink-0 gap-2 text-sm font-semibold">
-          <button
-            type="button"
-            onClick={() => {
-              void navigator.clipboard?.writeText(window.location.href);
-              toast.success("Link copied");
-            }}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 underline hover:bg-surface"
-          >
-            <Share size={16} /> Share
-          </button>
-          <HeartButton listingId={l.id} variant="text" />
+    <Container className="max-w-[1280px] pb-24 md:pb-0 md:pt-6">
+      {/* Phones: photos first, then the title (Airbnb's mobile order). Desktop: title first. */}
+      <div className="flex flex-col">
+        {/* Title row */}
+        <div className="order-2 mt-6 flex flex-col gap-2 md:order-1 md:mb-6 md:mt-0 md:flex-row md:items-end md:justify-between md:gap-4">
+          <h1 className="text-[22px] font-semibold md:text-[26px]">{l.title}</h1>
+          <div className="-ml-3 flex shrink-0 gap-2 text-sm font-semibold md:ml-0">
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText(window.location.href);
+                toast.success("Link copied");
+              }}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 underline hover:bg-surface"
+            >
+              <Share size={16} /> Share
+            </button>
+            <HeartButton listingId={l.id} variant="text" />
+          </div>
+        </div>
+
+        <div className="order-1 md:order-2">
+          <PhotoGrid images={l.image_urls} title={l.title} />
         </div>
       </div>
 
-      <PhotoGrid images={l.image_urls} title={l.title} />
-
-      <div className="mt-10 grid grid-cols-1 gap-16 md:grid-cols-[1fr_minmax(320px,370px)]">
+      <div className="mt-6 grid grid-cols-1 gap-16 md:mt-10 md:grid-cols-[1fr_minmax(320px,370px)]">
         {/* Left column */}
         <div className="divide-y divide-line">
           <section className="pb-8">
@@ -188,24 +210,12 @@ function ListingPageContent() {
           </section>
         </div>
 
-        {/* Right column: sticky booking card */}
-        <aside className="md:sticky md:top-28 md:self-start">
-          <BookingCard
-            pricePerNight={l.price_per_night}
-            maxGuests={l.max_guests}
-            range={range}
-            onRangeChange={setRange}
-            guests={Math.min(guests, l.max_guests)}
-            onGuestsChange={setGuests}
-            isNightBlocked={isNightBlocked}
-            quote={quote}
-            quoteError={quoteError}
-            quoteLoading={quoteLoading}
-            onReserve={reserve}
-            isOwnListing={currentUser?.id === l.host.id}
-          />
+        {/* Right column: sticky booking card (on phones it becomes the bottom bar below) */}
+        <aside className="hidden md:sticky md:top-28 md:block md:self-start">
+          <BookingCard {...booking} />
         </aside>
       </div>
+      <MobileReserveBar {...booking} />
 
       <div className="divide-y divide-line border-t border-line">
         <ReviewsSection reviews={l.reviews} rating={l.rating} />

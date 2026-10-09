@@ -42,7 +42,7 @@ export function PaymentForm({
         <span className="font-semibold">Credit or debit card</span>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[#b0b0b0]">
+      <div className="overflow-hidden rounded-lg border border-line-strong">
         <Field
           label="Card number"
           value={card.number}
@@ -51,7 +51,7 @@ export function PaymentForm({
           onChange={(v) => onChange({ ...card, number: formatCardNumber(v) })}
           icon={<Lock size={14} className="text-muted" />}
         />
-        <div className="grid grid-cols-2 border-t border-[#b0b0b0]">
+        <div className="grid grid-cols-2 border-t border-line-strong">
           <Field
             label="Expiration"
             value={card.expiry}
@@ -59,7 +59,7 @@ export function PaymentForm({
             inputMode="numeric"
             onChange={(v) => onChange({ ...card, expiry: formatExpiry(v) })}
           />
-          <div className="border-l border-[#b0b0b0]">
+          <div className="border-l border-line-strong">
             <Field
               label="CVV"
               value={card.cvv}
@@ -71,7 +71,7 @@ export function PaymentForm({
         </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-[#b0b0b0]">
+      <div className="mt-4 overflow-hidden rounded-lg border border-line-strong">
         <Field
           label="Name on card"
           value={card.name}

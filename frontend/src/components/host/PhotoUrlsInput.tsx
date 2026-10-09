@@ -36,12 +36,12 @@ export function PhotoUrlsInput({ urls, onChange }: { urls: string[]; onChange: (
             }
           }}
           placeholder="https://images.unsplash.com/photo-..."
-          className="flex-1 rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+          className="flex-1 rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
         />
         <button
           type="button"
           onClick={add}
-          className="flex items-center gap-1 rounded-lg bg-ink px-4 font-semibold text-white"
+          className="flex items-center gap-1 rounded-lg bg-ink px-4 font-semibold text-canvas"
         >
           <Plus size={16} /> Add
         </button>
@@ -54,7 +54,7 @@ export function PhotoUrlsInput({ urls, onChange }: { urls: string[]; onChange: (
             <li key={url} className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-surface">
               <ListingPhoto src={url} alt={`Photo ${i + 1}`} className="h-full w-full" />
               {i === 0 && (
-                <span className="absolute left-2 top-2 rounded-full bg-white px-2 py-0.5 text-xs font-semibold shadow">
+                <span className="absolute left-2 top-2 rounded-full bg-canvas px-2 py-0.5 text-xs font-semibold shadow">
                   Cover photo
                 </span>
               )}
@@ -91,7 +91,7 @@ function IconButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow hover:scale-105"
+      className="flex h-7 w-7 items-center justify-center rounded-full bg-canvas shadow hover:scale-105"
     >
       {children}
     </button>

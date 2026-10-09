@@ -73,7 +73,7 @@ function TripDetails() {
   return (
     <Container className="max-w-[880px] py-10">
       {justBooked && booking.status === "confirmed" && (
-        <div className="mb-8 flex items-center gap-3 rounded-xl bg-[#008a05]/10 p-5 text-[#006b04]">
+        <div className="mb-8 flex items-center gap-3 rounded-xl bg-green-600/10 p-5 text-green-700 dark:text-green-400">
           <CircleCheck size={24} />
           <div>
             <p className="font-semibold">Your reservation is confirmed</p>
@@ -187,7 +187,7 @@ function TripDetails() {
               type="button"
               onClick={cancel}
               disabled={cancelling}
-              className="rounded-lg bg-ink px-6 py-3 font-semibold text-white disabled:opacity-50"
+              className="rounded-lg bg-ink px-6 py-3 font-semibold text-canvas disabled:opacity-50"
             >
               {cancelling ? "Cancelling…" : "Yes, cancel"}
             </button>

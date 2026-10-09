@@ -76,7 +76,7 @@ function FiltersModalContent({ onClose, filters }: { onClose: () => void; filter
           <button
             type="button"
             onClick={apply}
-            className="rounded-lg bg-ink px-6 py-3 font-semibold text-white hover:bg-black"
+            className="rounded-lg bg-ink px-6 py-3 font-semibold text-canvas hover:opacity-90"
           >
             {matchCount === null ? "Show places" : `Show ${matchCount} place${matchCount === 1 ? "" : "s"}`}
           </button>

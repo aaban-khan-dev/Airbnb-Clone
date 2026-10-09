@@ -57,8 +57,8 @@ export function BookingCard({
         <span className="text-[22px] font-semibold">{formatPrice(pricePerNight)}</span> night
       </p>
 
-      <div className="mt-6 rounded-lg border border-[#b0b0b0]">
-        <div className="grid grid-cols-2 border-b border-[#b0b0b0]">
+      <div className="mt-6 rounded-lg border border-line-strong">
+        <div className="grid grid-cols-2 border-b border-line-strong">
           <DateBox label="Check-in" value={range.from} onClick={() => setPanel("dates")} />
           <DateBox label="Checkout" value={range.to} onClick={() => setPanel("dates")} border />
         </div>
@@ -76,14 +76,14 @@ export function BookingCard({
       </div>
 
       {panel === "guests" && (
-        <div className="absolute inset-x-6 z-30 mt-1 rounded-lg bg-white p-4 shadow-card ring-1 ring-black/5">
+        <div className="absolute inset-x-6 z-30 mt-1 rounded-lg bg-canvas p-4 shadow-card ring-1 ring-line">
           <Counter label="Guests" value={guests} min={1} max={maxGuests} onChange={onGuestsChange} />
           <p className="text-xs text-muted">This place has a maximum of {plural(maxGuests, "guest")}.</p>
         </div>
       )}
 
       {panel === "dates" && (
-        <div className="absolute right-0 top-0 z-30 w-[min(680px,90vw)] rounded-2xl bg-white p-6 shadow-card ring-1 ring-black/5">
+        <div className="absolute right-0 top-0 z-30 w-[min(680px,90vw)] rounded-2xl bg-canvas p-6 shadow-card ring-1 ring-line">
           <p className="mb-4 text-[22px] font-semibold">
             {quote ? plural(quote.nights, "night") : "Select dates"}
           </p>
@@ -99,7 +99,7 @@ export function BookingCard({
             <button
               type="button"
               onClick={closePanel}
-              className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-canvas"
             >
               Close
             </button>
@@ -111,7 +111,7 @@ export function BookingCard({
         type="button"
         onClick={handleMainButton}
         disabled={isOwnListing || (hasDates && (quoteLoading || unavailable || quoteError !== null))}
-        className="mt-4 w-full rounded-lg bg-gradient-to-r from-[#e61e4d] to-[#d70466] py-3.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-4 w-full rounded-lg bg-brand-gradient py-3.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
       >
         {hasDates ? "Reserve" : "Check availability"}
       </button>
@@ -158,7 +158,7 @@ function DateBox({
     <button
       type="button"
       onClick={onClick}
-      className={`px-3 py-2.5 text-left ${border ? "border-l border-[#b0b0b0]" : ""}`}
+      className={`px-3 py-2.5 text-left ${border ? "border-l border-line-strong" : ""}`}
     >
       <span className="block text-[10px] font-bold uppercase">{label}</span>
       <span className={`text-sm ${value ? "" : "text-muted"}`}>

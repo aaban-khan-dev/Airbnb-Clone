@@ -155,7 +155,7 @@ function Checkout() {
               type="button"
               onClick={confirmAndPay}
               disabled={submitting || !quote || Boolean(blockingMessage)}
-              className="w-full rounded-lg bg-gradient-to-r from-[#e61e4d] to-[#d70466] py-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:px-10"
+              className="w-full rounded-lg bg-brand-gradient py-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:px-10"
             >
               {submitting ? "Processing payment…" : "Confirm and pay"}
             </button>

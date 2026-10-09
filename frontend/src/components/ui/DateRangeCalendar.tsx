@@ -103,7 +103,7 @@ export function DateRangeCalendar({
                   aria-label={format(day, "EEEE, d MMMM yyyy")}
                   aria-pressed={isStart || isEnd}
                   className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold
-                    ${isStart || isEnd ? "bg-ink text-white" : "hover:border hover:border-ink"}
+                    ${isStart || isEnd ? "bg-ink text-canvas" : "hover:border hover:border-ink"}
                     ${!selectable ? "cursor-not-allowed text-muted/40 hover:border-0" : ""}
                     ${blocked && !isEnd ? "line-through" : ""}`}
                 >

@@ -51,7 +51,7 @@ export function HostListingsTab({
         <p className="mt-1 text-muted">It only takes a few minutes to share your place with guests.</p>
         <Link
           href="/host/listings/new"
-          className="mt-6 inline-block rounded-lg bg-gradient-to-r from-[#e61e4d] to-[#d70466] px-6 py-3 font-semibold text-white"
+          className="mt-6 inline-block rounded-lg bg-brand-gradient px-6 py-3 font-semibold text-white"
         >
           Get started
         </Link>

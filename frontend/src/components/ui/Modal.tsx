@@ -45,7 +45,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="flex max-h-[90vh] w-full max-w-[780px] flex-col rounded-t-2xl bg-white md:rounded-2xl"
+        className="flex max-h-[90vh] w-full max-w-[780px] flex-col rounded-t-2xl bg-canvas md:rounded-2xl"
         onMouseDown={(event) => event.stopPropagation()} // clicks inside don't close it
       >
         <header className="relative flex items-center justify-center border-b border-line px-6 py-4">

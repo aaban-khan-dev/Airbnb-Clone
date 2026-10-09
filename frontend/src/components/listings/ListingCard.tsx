@@ -30,7 +30,7 @@ export function ListingCard({
         <ImageCarousel images={listing.image_urls} alt={listing.title} />
 
         {isGuestFavourite && (
-          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-semibold shadow">
+          <span className="absolute left-3 top-3 rounded-full bg-canvas px-3 py-1 text-xs font-semibold shadow">
             Guest favourite
           </span>
         )}

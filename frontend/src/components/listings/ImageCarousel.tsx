@@ -51,7 +51,7 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt: string }
           {images.map((src, i) => (
             <span
               key={`${src}-dot-${i}`}
-              className={`h-1.5 w-1.5 rounded-full bg-white ${i === index ? "opacity-100" : "opacity-60"}`}
+              className={`h-1.5 w-1.5 rounded-full bg-canvas ${i === index ? "opacity-100" : "opacity-60"}`}
             />
           ))}
         </div>
@@ -82,7 +82,7 @@ function ArrowButton({
       type="button"
       onClick={onClick}
       aria-label={side === "left" ? "Previous photo" : "Next photo"}
-      className={`absolute top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 opacity-0 shadow transition-opacity hover:scale-105 hover:bg-white group-hover:opacity-100 ${
+      className={`absolute top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-canvas/90 opacity-0 shadow transition-opacity hover:scale-105 hover:bg-canvas group-hover:opacity-100 ${
         side === "left" ? "left-3" : "right-3"
       }`}
     >

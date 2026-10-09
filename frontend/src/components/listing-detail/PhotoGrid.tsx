@@ -3,6 +3,7 @@
 import { Grip } from "lucide-react";
 import { useState } from "react";
 
+import { MobilePhotoSlider } from "@/components/listing-detail/MobilePhotoSlider";
 import { ListingPhoto } from "@/components/listings/ListingPhoto";
 import { Modal } from "@/components/ui/Modal";
 
@@ -16,7 +17,10 @@ export function PhotoGrid({ images, title }: { images: string[]; title: string }
 
   return (
     <>
-      <div className="relative">
+      <MobilePhotoSlider images={images} title={title} onOpenGallery={() => setGalleryOpen(true)} />
+
+      {/* Desktop: big photo plus a 2x2 grid */}
+      <div className="relative hidden md:block">
         <div className="grid h-[300px] grid-cols-1 gap-2 overflow-hidden rounded-xl md:h-[440px] md:grid-cols-4 md:grid-rows-2">
           <button
             type="button"
@@ -43,7 +47,7 @@ export function PhotoGrid({ images, title }: { images: string[]; title: string }
         <button
           type="button"
           onClick={() => setGalleryOpen(true)}
-          className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-ink bg-white px-4 py-1.5 text-sm font-semibold hover:bg-surface"
+          className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-ink bg-canvas px-4 py-1.5 text-sm font-semibold hover:bg-surface"
         >
           <Grip size={16} />
           Show all photos

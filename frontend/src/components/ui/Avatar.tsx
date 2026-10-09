@@ -18,7 +18,7 @@ export function Avatar({
   if (!src || failedSrc === src) {
     return (
       <span
-        className="flex shrink-0 items-center justify-center rounded-full bg-ink font-semibold text-white"
+        className="flex shrink-0 items-center justify-center rounded-full bg-ink font-semibold text-canvas"
         style={{ width: size, height: size, fontSize: size * 0.42 }}
       >
         {name.charAt(0).toUpperCase()}

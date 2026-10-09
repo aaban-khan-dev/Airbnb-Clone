@@ -93,7 +93,7 @@ export function ListingForm({
             onChange={(e) => set("description", e.target.value)}
             rows={6}
             maxLength={5000}
-            className="w-full rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+            className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
           />
         </label>
       </Section>
@@ -129,7 +129,7 @@ export function ListingForm({
               const preset = CITY_PRESETS.find((p) => p.city === e.target.value);
               if (preset) setValues((v) => ({ ...v, ...preset, country: "India" }));
             }}
-            className="w-full rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+            className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
           >
             <option value="">Choose a city to fill in the location…</option>
             {CITY_PRESETS.map((p) => (
@@ -212,7 +212,7 @@ export function ListingForm({
       </Section>
 
       {/* Sticky footer with the save button, like Airbnb's listing editor */}
-      <div className="sticky bottom-0 z-10 flex items-center justify-between gap-4 border-t border-line bg-white py-4">
+      <div className="sticky bottom-0 z-10 flex items-center justify-between gap-4 border-t border-line bg-canvas py-4">
         <Link href="/host" className="font-semibold underline">
           Cancel
         </Link>
@@ -221,7 +221,7 @@ export function ListingForm({
           <button
             type="submit"
             disabled={saving}
-            className="shrink-0 rounded-lg bg-ink px-8 py-3 font-semibold text-white hover:bg-black disabled:opacity-50"
+            className="shrink-0 rounded-lg bg-ink px-8 py-3 font-semibold text-canvas hover:opacity-90 disabled:opacity-50"
           >
             {saving ? "Saving…" : submitLabel}
           </button>
@@ -258,7 +258,7 @@ function TextField({
         value={value}
         maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+        className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
       />
     </label>
   );
@@ -286,7 +286,7 @@ function NumberField({
         min={min}
         step={step}
         onChange={(e) => onChange(e.target.valueAsNumber)}
-        className="w-full rounded-lg border border-[#b0b0b0] px-4 py-3 outline-none focus:border-ink"
+        className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
       />
     </label>
   );

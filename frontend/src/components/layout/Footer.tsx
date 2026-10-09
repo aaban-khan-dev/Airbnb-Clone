@@ -9,7 +9,7 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-line bg-surface">
+    <footer className="mb-16 mt-16 border-t border-line bg-surface md:mb-0">
       <Container className="grid gap-8 py-12 text-sm md:grid-cols-3">
         {COLUMNS.map((column) => (
           <div key={column.title}>

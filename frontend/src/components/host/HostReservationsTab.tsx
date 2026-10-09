@@ -26,7 +26,7 @@ export function HostReservationsTab() {
             type="button"
             onClick={() => setWhen(f.id)}
             className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-              when === f.id ? "border-ink bg-ink text-white" : "border-line hover:border-ink"
+              when === f.id ? "border-ink bg-ink text-canvas" : "border-line hover:border-ink"
             }`}
           >
             {f.label}
