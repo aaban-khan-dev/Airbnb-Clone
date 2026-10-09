@@ -36,3 +36,8 @@ export function formatDateRange(checkIn: string, checkOut: string): string {
 export function plural(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? "" : "s"}`;
 }
+
+// "2026-10-17" -> "Sat, 17 Oct 2026"
+export function formatLongDate(value: string): string {
+  return format(fromISODate(value), "EEE, d MMM yyyy");
+}

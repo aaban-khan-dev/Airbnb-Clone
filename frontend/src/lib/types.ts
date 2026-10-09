@@ -96,3 +96,26 @@ export type PriceQuote = {
   total_price: number;
   available: boolean;
 };
+
+export type Booking = {
+  id: number;
+  listing: {
+    id: number;
+    title: string;
+    city: string;
+    state: string;
+    image_url: string | null;
+    host_name: string;
+  };
+  guest: { id: number; name: string; avatar_url: string | null };
+  check_in: string;
+  check_out: string;
+  nights: number;
+  num_guests: number;
+  nightly_price: number;
+  cleaning_fee: number;
+  service_fee: number;
+  total_price: number;
+  status: "confirmed" | "cancelled";
+  created_at: string;
+};

@@ -13,6 +13,7 @@ import { LocationMap } from "@/components/listing-detail/LocationMap";
 import { PhotoGrid } from "@/components/listing-detail/PhotoGrid";
 import { ReviewsSection } from "@/components/listing-detail/ReviewsSection";
 import { Avatar } from "@/components/ui/Avatar";
+import { useCurrentUser } from "@/context/UserContext";
 import { Container } from "@/components/ui/Container";
 import { type DateRange, DateRangeCalendar } from "@/components/ui/DateRangeCalendar";
 import { usePriceQuote } from "@/hooks/usePriceQuote";
@@ -40,6 +41,7 @@ function ListingPageContent() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { currentUser } = useCurrentUser();
   const [state, setState] = useState<LoadState>({ status: "loading" });
 
   // Dates and guests can arrive pre-filled from the search (?check_in=...&check_out=...)
@@ -205,6 +207,7 @@ function ListingPageContent() {
             quoteError={quoteError}
             quoteLoading={quoteLoading}
             onReserve={reserve}
+            isOwnListing={currentUser?.id === l.host.id}
           />
         </aside>
       </div>

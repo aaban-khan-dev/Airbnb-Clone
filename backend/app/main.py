@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.init_db import init_db
-from app.routers import health, listings, users
+from app.routers import bookings, health, listings, users
 
 
 @asynccontextmanager
@@ -27,3 +27,4 @@ app.add_middleware(
 app.include_router(health.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(listings.router, prefix="/api")
+app.include_router(bookings.router, prefix="/api")

@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
+import { PriceBreakdown } from "@/components/booking/PriceBreakdown";
 import { Counter } from "@/components/ui/Counter";
 import { type DateRange, DateRangeCalendar } from "@/components/ui/DateRangeCalendar";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -22,6 +23,7 @@ export function BookingCard({
   quoteError,
   quoteLoading,
   onReserve,
+  isOwnListing = false,
 }: {
   pricePerNight: number;
   maxGuests: number;
@@ -34,6 +36,7 @@ export function BookingCard({
   quoteError: string | null;
   quoteLoading: boolean;
   onReserve: () => void;
+  isOwnListing?: boolean;
 }) {
   const [panel, setPanel] = useState<"dates" | "guests" | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -107,11 +110,15 @@ export function BookingCard({
       <button
         type="button"
         onClick={handleMainButton}
-        disabled={hasDates && (quoteLoading || unavailable || quoteError !== null)}
+        disabled={isOwnListing || (hasDates && (quoteLoading || unavailable || quoteError !== null))}
         className="mt-4 w-full rounded-lg bg-gradient-to-r from-[#e61e4d] to-[#d70466] py-3.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
       >
         {hasDates ? "Reserve" : "Check availability"}
       </button>
+
+      {isOwnListing && (
+        <p className="mt-3 text-center text-sm text-muted">You host this place, so you can&apos;t book it.</p>
+      )}
 
       {unavailable && (
         <p className="mt-3 text-center text-sm font-semibold text-brand">Those dates are not available.</p>
@@ -121,18 +128,15 @@ export function BookingCard({
       {quote && quote.available && (
         <>
           <p className="mt-3 text-center text-sm text-muted">You won&apos;t be charged yet</p>
-          <dl className="mt-6 space-y-3">
-            <PriceRow
-              label={`${formatPrice(quote.nightly_price)} x ${plural(quote.nights, "night")}`}
-              amount={quote.subtotal}
+          <div className="mt-6">
+            <PriceBreakdown
+              nightlyPrice={quote.nightly_price}
+              nights={quote.nights}
+              cleaningFee={quote.cleaning_fee}
+              serviceFee={quote.service_fee}
+              totalPrice={quote.total_price}
             />
-            <PriceRow label="Cleaning fee" amount={quote.cleaning_fee} />
-            <PriceRow label="Service fee" amount={quote.service_fee} />
-            <div className="flex justify-between border-t border-line pt-5 font-semibold">
-              <dt>Total before taxes</dt>
-              <dd>{formatPrice(quote.total_price)}</dd>
-            </div>
-          </dl>
+          </div>
         </>
       )}
     </div>
@@ -161,14 +165,5 @@ function DateBox({
         {value ? value.toLocaleDateString("en-IN") : "Add date"}
       </span>
     </button>
-  );
-}
-
-function PriceRow({ label, amount }: { label: string; amount: number }) {
-  return (
-    <div className="flex justify-between">
-      <dt className="underline">{label}</dt>
-      <dd>{formatPrice(amount)}</dd>
-    </div>
   );
 }
