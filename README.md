@@ -20,7 +20,6 @@ Built for the Scaler SDE Fullstack assignment with Next.js, FastAPI and SQLite.
 
 </div>
 
-> **Note:** An independent educational project built for an assignment. It is not affiliated with or endorsed by Airbnb, Inc.
 
 ---
 
