@@ -1,23 +1,28 @@
-# staybnb --- Airbnb-Inspired Stay Booking Platform
+# Airbnb Clone — Full-Stack Stay Booking Platform
 
-A full-stack accommodation marketplace developed for the Scaler SDE
-Fullstack assignment. **staybnb** recreates the core guest and host
-workflows of a modern short-stay booking platform, including property
-discovery, filtering, listing details, date-based reservations, trip
-management, and host-side listing management.
+A full-stack accommodation booking application built for the Scaler SDE Fullstack assignment. Guests can discover stays, filter listings, view property details, book date ranges, and manage trips. Hosts can create and manage listings and review reservations.
 
-The interface is designed around a photo-first browsing experience, with
-responsive layouts, a compacting search header, listing galleries,
-booking summaries, dialogs, and toast notifications.
+The interface follows a photo-first marketplace layout with responsive pages, listing galleries, booking summaries, dialogs, and toast notifications.
 
--   **Live application:** *Add the Vercel deployment URL*
--   **API documentation:** *Add the Railway deployment URL* followed by
-    `/docs`
--   **Repository:** *Add the GitHub repository URL*
+- **Live application:** _Add your Vercel deployment URL_
+- **API documentation:** _Add your Railway deployment URL_ followed by `/docs`
+- **GitHub repository:** _Add your repository URL_
 
-> **Branding:** The project uses its own name and logo, staybnb. It is
-> an independent assignment project and does not use Airbnb's trademarks
-> as its brand identity.
+> **Project note:** This is an independent assignment project. It uses its own implementation and branding and is not affiliated with Airbnb.
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Technology Stack](#technology-stack)
+- [System Design and Architecture](#system-design-and-architecture)
+- [Booking Concurrency and Availability](#booking-concurrency-and-availability)
+- [Database Schema](#database-schema)
+- [API Reference](#api-reference)
+- [Assumptions and Scope](#assumptions-and-scope)
+- [Challenges and Implementation Notes](#challenges-and-implementation-notes)
+- [Known Limitations](#known-limitations)
+- [Potential Improvements](#potential-improvements)
 
 ## Features
 
@@ -268,7 +273,7 @@ Users are labelled as hosts or guests.
 
 ------------------------------------------------------------------------
 
-## Architecture
+## System Design and Architecture
 
 ``` text
 Browser (Next.js application)
@@ -287,7 +292,7 @@ SQLAlchemy models
 SQLite database (airbnb.db)
 ```
 
-### Backend structure
+### Backend Structure
 
 Located in `backend/app`:
 
@@ -323,7 +328,7 @@ Key backend design decisions:
     `selectinload`. Host dashboard statistics use grouped queries rather
     than issuing a separate statistics query for every listing.
 
-### Frontend structure
+### Frontend Structure
 
 Located in `frontend/src`:
 
@@ -369,7 +374,7 @@ Preventing overlapping reservations requires more than an
 application-level availability check: two concurrent requests could
 otherwise both pass the check before either inserts a booking.
 
-staybnb uses two safeguards:
+airbnb uses two safeguards:
 
 1.  **Service-level validation:** Before creating a reservation,
     `booking_service` checks for confirmed bookings on the same listing
@@ -501,7 +506,7 @@ erDiagram
     }
 ```
 
-### Schema design decisions
+### Schema Design Decisions
 
   -------------------------------------------------------------------------
   Decision                            Rationale
@@ -562,7 +567,7 @@ erDiagram
                                       multiple bedrooms.
   -------------------------------------------------------------------------
 
-### Seed data
+### Seed Data
 
 The database is seeded automatically when it is empty. A fixed random
 seed makes the sample dataset reproducible. Booking dates are generated
@@ -737,7 +742,7 @@ production-grade authentication.
                                                  idempotent).    
   ----------------------------------------------------------------------------------------
 
-### HTTP status codes
+### HTTP Status Codes
 
   -----------------------------------------------------------------------
                                       Code Meaning
