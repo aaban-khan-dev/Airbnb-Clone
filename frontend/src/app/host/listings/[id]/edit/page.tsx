@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { ListingForm } from "@/components/host/ListingForm";
+import { ListingForm, toFormValues } from "@/components/host/ListingForm";
 import { Container } from "@/components/ui/Container";
 import { useCurrentUser } from "@/context/UserContext";
 import { api } from "@/lib/api";
@@ -26,7 +26,7 @@ function EditListing() {
   useEffect(() => {
     api
       .get<ListingFormValues>(`/api/host/listings/${id}`)
-      .then(setValues)
+      .then((listing) => setValues(toFormValues(listing)))
       .catch((err: Error) => setError(err.message));
   }, [id]);
 

@@ -6,6 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { AboutSection } from "@/components/listing-detail/AboutSection";
 import { AmenitiesSection } from "@/components/listing-detail/AmenitiesSection";
 import { BookingCard } from "@/components/listing-detail/BookingCard";
 import { HeartButton } from "@/components/listings/HeartButton";
@@ -14,6 +15,7 @@ import { LocationMap } from "@/components/listing-detail/LocationMap";
 import { MobileReserveBar } from "@/components/listing-detail/MobileReserveBar";
 import { PhotoGrid } from "@/components/listing-detail/PhotoGrid";
 import { ReviewsSection } from "@/components/listing-detail/ReviewsSection";
+import { SleepSection } from "@/components/listing-detail/SleepSection";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCurrentUser } from "@/context/UserContext";
 import { Container } from "@/components/ui/Container";
@@ -195,7 +197,14 @@ function ListingPageContent() {
             </div>
           </section>
 
-          <section className="whitespace-pre-line py-8 leading-relaxed">{l.description}</section>
+          <AboutSection
+            summary={l.description}
+            space={l.space}
+            guestAccess={l.guest_access}
+            otherNotes={l.other_notes}
+          />
+
+          <SleepSection bedrooms={l.bedroom_details} />
 
           <AmenitiesSection amenities={l.amenities} />
 

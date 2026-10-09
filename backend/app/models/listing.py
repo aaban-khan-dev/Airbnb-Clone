@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
@@ -16,6 +17,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+
+if TYPE_CHECKING:  # imports for type hints only; avoids circular imports at runtime
+    from app.models.booking import Booking
+    from app.models.review import Review
+    from app.models.user import User
 
 # Many-to-many link table: one listing has many amenities, one amenity belongs to many listings.
 # The composite primary key stops the same amenity being attached to a listing twice.
@@ -39,7 +45,11 @@ class Listing(Base):
     host_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
 
     title: Mapped[str] = mapped_column(String(150))
+    # "About this space": the summary shows on the page, the rest in the Show more dialog
     description: Mapped[str] = mapped_column(Text)
+    space: Mapped[str | None] = mapped_column(Text)
+    guest_access: Mapped[str | None] = mapped_column(Text)
+    other_notes: Mapped[str | None] = mapped_column(Text)
     property_type: Mapped[str] = mapped_column(String(50), index=True)  # House, Villa, Cabin...
     category: Mapped[str] = mapped_column(String(50), index=True)  # icon row: Beachfront, Cabins...
 
@@ -71,6 +81,11 @@ class Listing(Base):
         cascade="all, delete-orphan",
         order_by="ListingImage.position",
     )
+    bedroom_details: Mapped[list["ListingBedroom"]] = relationship(
+        back_populates="listing",
+        cascade="all, delete-orphan",
+        order_by="ListingBedroom.position",
+    )
     amenities: Mapped[list["Amenity"]] = relationship(secondary=listing_amenities)
     bookings: Mapped[list["Booking"]] = relationship(back_populates="listing")
     reviews: Mapped[list["Review"]] = relationship(back_populates="listing")
@@ -87,6 +102,22 @@ class ListingImage(Base):
     position: Mapped[int] = mapped_column(Integer, default=0)  # 0 = cover photo
 
     listing: Mapped["Listing"] = relationship(back_populates="images")
+
+
+class ListingBedroom(Base):
+    """One bedroom in the "Where you'll sleep" section: its beds and an optional photo."""
+
+    __tablename__ = "listing_bedrooms"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    listing_id: Mapped[int] = mapped_column(
+        ForeignKey("listings.id", ondelete="CASCADE"), index=True
+    )
+    position: Mapped[int] = mapped_column(Integer, default=0)  # 0 = "Bedroom 1"
+    beds: Mapped[str] = mapped_column(String(100))  # e.g. "1 double bed, 1 single bed"
+    image_url: Mapped[str | None] = mapped_column(String(1000))
+
+    listing: Mapped["Listing"] = relationship(back_populates="bedroom_details")
 
 
 class Amenity(Base):

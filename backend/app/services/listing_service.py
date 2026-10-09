@@ -7,6 +7,7 @@ from app.core.constants import CATEGORIES, PROPERTY_TYPES
 from app.models import Amenity, Listing, Review
 from app.schemas.listing import (
     AmenityOut,
+    BedroomOut,
     DateRangeOut,
     FilterOptions,
     HostOut,
@@ -154,6 +155,10 @@ def get_listing_detail(db: Session, listing: Listing) -> ListingDetail:
     return ListingDetail(
         **card.model_dump(),
         description=listing.description,
+        space=listing.space,
+        guest_access=listing.guest_access,
+        other_notes=listing.other_notes,
+        bedroom_details=[BedroomOut.model_validate(b) for b in listing.bedroom_details],
         bathrooms=listing.bathrooms,
         cleaning_fee=listing.cleaning_fee,
         host=HostOut.model_validate(listing.host),

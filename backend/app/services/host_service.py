@@ -4,9 +4,9 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Amenity, Booking, Listing, ListingImage, Review, User
+from app.models import Amenity, Booking, Listing, ListingBedroom, ListingImage, Review, User
 from app.schemas.booking import BookingOut
-from app.schemas.host import HostBookingFilter, HostListingForm, HostListingSummary, ListingWrite
+from app.schemas.host import BedroomWrite, HostBookingFilter, HostListingForm, HostListingSummary, ListingWrite
 from app.services.booking_service import to_booking_out, with_booking_details
 
 
@@ -55,6 +55,9 @@ def to_form(listing: Listing) -> HostListingForm:
         id=listing.id,
         title=listing.title,
         description=listing.description,
+        space=listing.space,
+        guest_access=listing.guest_access,
+        other_notes=listing.other_notes,
         property_type=listing.property_type,
         category=listing.category,
         city=listing.city,
@@ -70,6 +73,9 @@ def to_form(listing: Listing) -> HostListingForm:
         bathrooms=listing.bathrooms,
         image_urls=[image.url for image in listing.images],
         amenity_ids=[amenity.id for amenity in listing.amenities],
+        bedroom_details=[
+            BedroomWrite(beds=room.beds, image_url=room.image_url) for room in listing.bedroom_details
+        ],
     )
 
 
@@ -157,14 +163,18 @@ def list_host_bookings(db: Session, host: User, filters: HostBookingFilter) -> l
 
 
 def _apply(db: Session, listing: Listing, data: ListingWrite) -> None:
-    """Copy the form values onto the listing, replacing its photos and amenities."""
+    """Copy the form values onto the listing, replacing its photos, bedrooms and amenities."""
     amenities = db.scalars(select(Amenity).where(Amenity.id.in_(data.amenity_ids))).all()
     if len(amenities) != len(set(data.amenity_ids)):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Unknown amenity selected")
 
-    fields = data.model_dump(exclude={"image_urls", "amenity_ids"})
+    fields = data.model_dump(exclude={"image_urls", "amenity_ids", "bedroom_details"})
     for name, value in fields.items():
         setattr(listing, name, value)
     listing.amenities = list(amenities)
     # delete-orphan cascade removes the old photo rows automatically
     listing.images = [ListingImage(url=url, position=i) for i, url in enumerate(data.image_urls)]
+    listing.bedroom_details = [
+        ListingBedroom(beds=room.beds, image_url=room.image_url, position=i)
+        for i, room in enumerate(data.bedroom_details)
+    ]

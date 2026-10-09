@@ -1,11 +1,24 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
 
 from app.core.constants import CATEGORIES, PROPERTY_TYPES
 
 ImageUrl = Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000, pattern=r"^https?://\S+$")]
 ShortText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=2, max_length=100)]
+OptionalLongText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=5000)] | None
+
+
+class BedroomWrite(BaseModel):
+    """One bedroom in "Where you'll sleep"."""
+
+    beds: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=100)]
+    image_url: ImageUrl | None = None
+
+    @field_validator("image_url", mode="before")
+    @classmethod
+    def blank_url_is_none(cls, value: str | None) -> str | None:
+        return value.strip() or None if isinstance(value, str) else value
 
 
 class ListingWrite(BaseModel):
@@ -13,6 +26,10 @@ class ListingWrite(BaseModel):
 
     title: Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=150)]
     description: Annotated[str, StringConstraints(strip_whitespace=True, min_length=20, max_length=5000)]
+    # Optional "Show more" sections; empty text is stored as NULL
+    space: OptionalLongText = None
+    guest_access: OptionalLongText = None
+    other_notes: OptionalLongText = None
     property_type: str
     category: str
 
@@ -32,6 +49,18 @@ class ListingWrite(BaseModel):
 
     image_urls: list[ImageUrl] = Field(min_length=1, max_length=20)  # first = cover photo
     amenity_ids: list[int] = []
+    bedroom_details: list[BedroomWrite] = Field(default=[], max_length=50)
+
+    @field_validator("space", "guest_access", "other_notes", mode="after")
+    @classmethod
+    def blank_is_none(cls, value: str | None) -> str | None:
+        return value or None
+
+    @model_validator(mode="after")
+    def bedrooms_fit(self):
+        if len(self.bedroom_details) > self.bedrooms:
+            raise ValueError("bedroom_details can't list more rooms than the number of bedrooms")
+        return self
 
     @field_validator("property_type")
     @classmethod

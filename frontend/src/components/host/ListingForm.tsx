@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { BedroomsInput } from "@/components/host/BedroomsInput";
 import { PhotoUrlsInput } from "@/components/host/PhotoUrlsInput";
 import { AmenityIcon } from "@/components/ui/AmenityIcon";
 import { Counter } from "@/components/ui/Counter";
@@ -29,7 +30,46 @@ export const EMPTY_LISTING: ListingFormValues = {
   bathrooms: 1,
   image_urls: [],
   amenity_ids: [],
+  space: "",
+  guest_access: "",
+  other_notes: "",
+  bedroom_details: [{ beds: "", image_url: "" }],
 };
+
+type Room = ListingFormValues["bedroom_details"][number];
+
+/** One row per bedroom: keeps what's typed, adds empty rows or drops extra ones. */
+function resizeRooms(rooms: Room[], count: number): Room[] {
+  return Array.from({ length: count }, (_, i) => rooms[i] ?? { beds: "", image_url: "" });
+}
+
+/** The edit API sends null for empty optional fields; the form works with "" instead. */
+export function toFormValues(listing: ListingFormValues): ListingFormValues {
+  return {
+    ...listing,
+    space: listing.space ?? "",
+    guest_access: listing.guest_access ?? "",
+    other_notes: listing.other_notes ?? "",
+    bedroom_details: resizeRooms(
+      listing.bedroom_details.map((room) => ({ beds: room.beds, image_url: room.image_url ?? "" })),
+      listing.bedrooms,
+    ),
+  };
+}
+
+/** What gets sent: bedrooms are all-or-nothing, and a bedroom can only use one of the listing's photos. */
+function toPayload(values: ListingFormValues): ListingFormValues {
+  const described = values.bedroom_details.some((room) => room.beds.trim());
+  return {
+    ...values,
+    bedroom_details: described
+      ? values.bedroom_details.map((room) => ({
+          beds: room.beds,
+          image_url: values.image_urls.includes(room.image_url) ? room.image_url : "",
+        }))
+      : [],
+  };
+}
 
 /** Quick checks before sending. The backend validates everything again: these only
  *  give faster feedback, they are not what keeps bad data out. */
@@ -40,6 +80,11 @@ function validate(values: ListingFormValues): string | null {
   if (!values.category) return "Choose a category";
   if (!values.city.trim() || !values.state.trim()) return "Enter the city and state";
   if (values.image_urls.length === 0) return "Add at least one photo";
+  const filled = values.bedroom_details.filter((room) => room.beds.trim()).length;
+  if (filled > 0 && filled < values.bedroom_details.length)
+    return "Describe the beds in every bedroom, or leave them all empty";
+  if (values.bedroom_details.some((room) => room.beds.trim() && room.beds.trim().length < 3))
+    return "Describe each bedroom's beds, e.g. \"1 queen bed\"";
   if (!(values.price_per_night > 0)) return "Set a nightly price";
   return null;
 }
@@ -75,7 +120,7 @@ export function ListingForm({
     if (problem) return;
     setSaving(true);
     try {
-      await onSubmit(values);
+      await onSubmit(toPayload(values));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't save. Please try again.");
       setSaving(false);
@@ -86,16 +131,32 @@ export function ListingForm({
     <form onSubmit={handleSubmit} className="divide-y divide-line">
       <Section title="Basics">
         <TextField label="Title" value={values.title} onChange={(v) => set("title", v)} maxLength={150} />
-        <label className="mt-4 block">
-          <span className="mb-1 block text-sm font-semibold">Description</span>
-          <textarea
-            value={values.description}
-            onChange={(e) => set("description", e.target.value)}
-            rows={6}
-            maxLength={5000}
-            className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
+        <TextArea
+          label="Summary"
+          hint="Shown on your listing page. A few short paragraphs about what makes your place special."
+          value={values.description}
+          onChange={(v) => set("description", v)}
+          rows={6}
+        />
+      </Section>
+
+      <Section title="More about your place (optional)">
+        <p className="-mt-3 mb-4 text-sm text-muted">Guests see these when they click Show more.</p>
+        <div className="space-y-4">
+          <TextArea label="The space" value={values.space} onChange={(v) => set("space", v)} rows={5} />
+          <TextArea
+            label="Guest access"
+            value={values.guest_access}
+            onChange={(v) => set("guest_access", v)}
+            rows={2}
           />
-        </label>
+          <TextArea
+            label="Other things to note"
+            value={values.other_notes}
+            onChange={(v) => set("other_notes", v)}
+            rows={2}
+          />
+        </div>
       </Section>
 
       <Section title="Which of these best describes your place?">
@@ -156,7 +217,15 @@ export function ListingForm({
       <Section title="Share some basics about your place">
         <div className="divide-y divide-line">
           <Counter label="Guests" value={values.max_guests} min={1} max={16} onChange={(n) => set("max_guests", n)} />
-          <Counter label="Bedrooms" value={values.bedrooms} min={0} max={50} onChange={(n) => set("bedrooms", n)} />
+          <Counter
+            label="Bedrooms"
+            value={values.bedrooms}
+            min={0}
+            max={50}
+            onChange={(n) =>
+              setValues((v) => ({ ...v, bedrooms: n, bedroom_details: resizeRooms(v.bedroom_details, n) }))
+            }
+          />
           <Counter label="Beds" value={values.beds} min={1} max={50} onChange={(n) => set("beds", n)} />
           <Counter label="Bathrooms" value={values.bathrooms} min={1} max={50} onChange={(n) => set("bathrooms", n)} />
         </div>
@@ -189,6 +258,14 @@ export function ListingForm({
 
       <Section title="Add some photos">
         <PhotoUrlsInput urls={values.image_urls} onChange={(urls) => set("image_urls", urls)} />
+      </Section>
+
+      <Section title="Where guests will sleep (optional)">
+        <BedroomsInput
+          rooms={values.bedroom_details}
+          photos={values.image_urls}
+          onChange={(rooms) => set("bedroom_details", rooms)}
+        />
       </Section>
 
       <Section title="Set your price">
@@ -259,6 +336,34 @@ function TextField({
         maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-ink"
+      />
+    </label>
+  );
+}
+
+function TextArea({
+  label,
+  hint,
+  value,
+  onChange,
+  rows,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (value: string) => void;
+  rows: number;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm font-semibold">{label}</span>
+      {hint && <span className="mb-2 block text-xs text-muted">{hint}</span>}
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={rows}
+        maxLength={5000}
+        className="w-full rounded-lg border border-line-strong bg-canvas px-4 py-3 outline-none focus:border-ink"
       />
     </label>
   );

@@ -75,8 +75,17 @@ export type DateRangeOut = {
   check_out: string;
 };
 
+export type Bedroom = {
+  beds: string; // e.g. "1 double bed, 1 single bed"
+  image_url: string | null;
+};
+
 export type ListingDetail = ListingCard & {
-  description: string;
+  description: string; // the summary shown on the page
+  space: string | null; // the rest of "About this space", shown in the Show more dialog
+  guest_access: string | null;
+  other_notes: string | null;
+  bedroom_details: Bedroom[];
   bathrooms: number;
   cleaning_fee: number;
   host: Host;
@@ -140,6 +149,11 @@ export type ListingFormValues = {
   bathrooms: number;
   image_urls: string[];
   amenity_ids: number[];
+  // Optional extras. Empty strings are saved as "not set".
+  space: string;
+  guest_access: string;
+  other_notes: string;
+  bedroom_details: { beds: string; image_url: string }[];
 };
 
 export type HostListingSummary = {

@@ -2,49 +2,46 @@
 
 UNSPLASH = "https://images.unsplash.com/photo-{}?auto=format&fit=crop&w=1200&q=80"
 
-# Photo pools, grouped by what they show. Each listing gets one exterior shot
-# (matching its category) plus living room, bedroom, kitchen and bathroom shots.
-IMAGE_POOLS: dict[str, list[str]] = {
-    "beach": [
-        "1499793983690-e29da59ef1c2",
-        "1520250497591-112f2f40a3f4",
-        "1540541338287-41700207dee6",
-        "1571003123894-1f0594d2b5d9",
-    ],
-    "mountain": [
-        "1449158743715-0a90ebb6d2d8",
-        "1518780664697-55e3ad937233",
-        "1510798831971-661eb04b3739",
-        "1587061949409-02df41d5e562",
-    ],
-    "villa": [
-        "1613490493576-7fde63acd811",
-        "1564013799919-ab600027ffc6",
-        "1580587771525-78b9dba3b914",
-        "1512917774080-9991f1c4c750",
-        "1600596542815-ffad4c1539a9",
-        "1600585154340-be6161a56a0c",
-    ],
-    "city": [
-        "1545324418-cc1a3fa10c00",
-        "1522708323590-d24dbb6b0267",
-        "1560448204-e02f11c3d0e2",
-        "1502672260266-1c1ef2d93688",
-    ],
-    "heritage": [
-        "1568605114967-8130f3a36994",
-        "1570129477492-45c003edd2be",
-        "1566073771259-6a8506099945",
-    ],
-    # Extra exterior shots, used as cover photos once a category's own pool runs out
-    "extra_exterior": [
-        "1572120360610-d971b9d7767c",
-        "1583608205776-bfd35f0d9f83",
-        "1600585154526-990dced4db0d",
-        "1600566753086-00f18fb6b3ea",
-        "1605146769289-440113cc3d00",
-        "1613977257363-707ba9348227",
-    ],
+# One hand-picked cover photo per listing, keyed by title. Every cover is different
+# (seed.py checks this), so no two cards on the home page share a front photo.
+COVERS: dict[str, str] = {
+    "Beachfront villa with private pool": "1520250497591-112f2f40a3f4",
+    "Cozy studio steps from Anjuna beach": "1499793983690-e29da59ef1c2",
+    "Portuguese heritage home in Fontainhas": "1568605114967-8130f3a36994",
+    "Palolem beach hut with sea view": "1597475681177-809cfdc76cd2",
+    "Lakeside cottage on the Vembanad backwaters": "1598924957326-0446ac30341e",
+    "Tea estate bungalow with valley views": "1449158743715-0a90ebb6d2d8",
+    "Cliffside room overlooking Varkala beach": "1695259496167-c05f25f1d793",
+    "Traditional tharavad in Fort Kochi": "1570129477492-45c003edd2be",
+    "Pine wood cabin with mountain views": "1510798831971-661eb04b3739",
+    "Apple orchard cottage in Old Manali": "1512411233342-92208dfe81af",
+    "Himalayan A-frame by the Parvati river": "1587061949409-02df41d5e562",
+    "Colonial cottage near the Shimla ridge": "1518780664697-55e3ad937233",
+    "Riverside retreat near Rishikesh": "1680645944941-da9198d7f6aa",
+    "Lake-view home in Nainital": "1763051339093-61c59f40ba28",
+    "Forest cabin in Mukteshwar": "1697807650304-907257330a3e",
+    "Haveli suite in the Pink City": "1566073771259-6a8506099945",
+    "Lake Pichola view heritage room": "1707691888016-85d630302247",
+    "Desert villa with pool near the dunes": "1613490493576-7fde63acd811",
+    "Rooftop studio near Hawa Mahal": "1545324418-cc1a3fa10c00",
+    "Sea-facing apartment in Bandra": "1502672260266-1c1ef2d93688",
+    "Art deco flat in Colaba": "1560448204-e02f11c3d0e2",
+    "Modern loft in Indiranagar": "1522708323590-d24dbb6b0267",
+    "Garden home in Lutyens' Delhi": "1564013799919-ab600027ffc6",
+    "Boutique stay in Hauz Khas Village": "1628592102751-ba83b0314276",
+    "Coffee estate villa in Coorg": "1628624747186-a941c476b7ef",
+    "Infinity pool villa near Lonavala": "1600596542815-ffad4c1539a9",
+    "Farmhouse with pool in Alibaug": "1596178067639-5c6e68aea6dc",
+    "French Quarter heritage home": "1723108034000-e7fd897e3be0",
+    "Beach cottage near Auroville": "1528913775512-624d24b27b96",
+    "Houseboat stay on Dal Lake": "1631528858266-5ebeb8bfc6f5",
+    "Tea garden cottage in Darjeeling": "1475087542963-13ab5e611954",
+    "Cliffside villa with plunge pool": "1694967832949-09984640b143",
+}
+
+# Interior photos, shared between listings (only the covers need to be unique).
+# Each listing gets one living room, one photo per bedroom, a kitchen and a bathroom.
+ROOM_PHOTOS: dict[str, list[str]] = {
     "living": [
         "1493809842364-78817add7ffb",
         "1586023492125-27b2c045efd7",
@@ -60,7 +57,16 @@ IMAGE_POOLS: dict[str, list[str]] = {
         "1617806118233-18e1de247200",
         "1522771739844-6a9f6d5f14af",
         "1582719478250-c89cae4dc85b",
-        "1590490360182-c33d57733427",
+        "1611892440504-42a792e24d32",
+        "1629140727571-9b5c6f6267b4",
+        "1711059985570-4c32ed12a12c",
+        "1568495248636-6432b97bd949",
+        "1576354302919-96748cb8299e",
+        "1630660664869-c9d3cc676880",
+        "1667125095636-dce94dcbdd96",
+        "1549638441-b787d2e11f14",
+        "1512918728675-ed5a9ecdebfd",
+        "1721369483526-62f48a00b949",
     ],
     "kitchen": [
         "1484154218962-a197022b5858",
@@ -73,20 +79,6 @@ IMAGE_POOLS: dict[str, list[str]] = {
         "1584622650111-993a426fbf0a",
         "1620626011761-996317b8d101",
     ],
-}
-
-EXTERIOR_POOLS = ["beach", "mountain", "villa", "city", "heritage", "extra_exterior"]
-
-# Which exterior pool fits each category
-CATEGORY_EXTERIOR = {
-    "Beachfront": "beach",
-    "Amazing views": "mountain",
-    "Cabins": "mountain",
-    "Amazing pools": "villa",
-    "Countryside": "villa",
-    "Iconic cities": "city",
-    "Historical homes": "heritage",
-    "Lakefront": "beach",
 }
 
 # (name, email, is_superhost, bio). The first 6 own listings (hosts); the rest are guests only.
@@ -173,23 +165,6 @@ LISTINGS = [
     ("Tea garden cottage in Darjeeling", "Darjeeling", "West Bengal", 27.0410, 88.2663, "Amazing views", "Cottage", 4700, 4, 2, 2, 1, 2),
     ("Cliffside villa with plunge pool", "Gokarna", "Karnataka", 14.5479, 74.3188, "Amazing pools", "Villa", 10800, 6, 3, 3, 3, 5),
 ]
-
-DESCRIPTION_OPENERS = {
-    "Beachfront": "Wake up to the sound of waves at this {ptype} in {city}. The beach is a short walk away, and evenings here are made for sunsets.",
-    "Amazing views": "This {ptype} in {city} is all about the view. Big windows frame the hills, and the terrace is the best seat in the house.",
-    "Cabins": "A warm, wood-lined {ptype} tucked into the hills of {city}. Light the fireplace, make some chai and watch the clouds roll in.",
-    "Amazing pools": "Your own pool, plenty of space and complete privacy. This {ptype} near {city} is built for long, lazy days with family or friends.",
-    "Countryside": "Slow down at this {ptype} in {city}, surrounded by greenery, birdsong and fresh air. A perfect break from city life.",
-    "Iconic cities": "A stylish {ptype} in the heart of {city}, close to the best cafes, markets and sights. Fast Wi-Fi and a proper desk make it great for work trips.",
-    "Historical homes": "Stay in a piece of history. This lovingly restored {ptype} in {city} keeps its original character while adding every modern comfort.",
-    "Lakefront": "Right by the water in {city}, this {ptype} offers calm mornings, misty views and easy access to boating and lakeside walks.",
-}
-DESCRIPTION_CLOSER = (
-    "\n\nThe space\nThe home sleeps {guests} guests across {bedrooms} bedroom(s) with {beds} bed(s) "
-    "and {baths} bathroom(s). Fresh linen and towels are provided.\n\n"
-    "Guest access\nGuests have the entire space to themselves. Self check-in is available, "
-    "and the host is a message away if you need anything."
-)
 
 REVIEW_COMMENTS = {
     5: [

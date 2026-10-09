@@ -104,10 +104,21 @@ class DateRangeOut(BaseModel):
     check_out: date
 
 
+class BedroomOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    beds: str
+    image_url: str | None
+
+
 class ListingDetail(ListingCard):
     """Everything the listing page shows. Extends the card with the full details."""
 
     description: str
+    space: str | None
+    guest_access: str | None
+    other_notes: str | None
+    bedroom_details: list[BedroomOut]
     bathrooms: int
     cleaning_fee: int
     host: HostOut

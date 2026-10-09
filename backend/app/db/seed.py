@@ -11,7 +11,17 @@ from datetime import date, datetime, time, timedelta
 from sqlalchemy.orm import Session
 
 from app.db import seed_data as data
-from app.models import Amenity, Booking, Listing, ListingImage, Review, User, WishlistItem
+from app.db.seed_listing_text import LISTING_TEXT
+from app.models import (
+    Amenity,
+    Booking,
+    Listing,
+    ListingBedroom,
+    ListingImage,
+    Review,
+    User,
+    WishlistItem,
+)
 from app.services.pricing import calculate_price
 
 NUM_HOSTS = 6
@@ -56,20 +66,18 @@ def _create_amenities(db: Session) -> dict[str, Amenity]:
 def _create_listings(
     db: Session, rng: random.Random, hosts: list[User], amenities: dict[str, Amenity]
 ) -> list[Listing]:
+    _check_sample_data()
     listings = []
-    used_covers: set[str] = set()  # every listing gets its own cover photo
     for (title, city, state, lat, lng, category, ptype, price,
          guests, bedrooms, beds, baths, host_index) in data.LISTINGS:
-        description = data.DESCRIPTION_OPENERS[category].format(
-            ptype=ptype.lower(), city=city
-        ) + data.DESCRIPTION_CLOSER.format(
-            guests=guests, bedrooms=bedrooms, beds=beds, baths=baths
-        )
-
+        text = LISTING_TEXT[title]
         listing = Listing(
             host=hosts[host_index],
             title=title,
-            description=description,
+            description=text["summary"],
+            space=text["space"],
+            guest_access=text["guest_access"],
+            other_notes=text["other_notes"],
             property_type=ptype,
             category=category,
             city=city,
@@ -89,10 +97,23 @@ def _create_listings(
         amenity_names |= set(rng.sample(data.EXTRA_AMENITIES, k=2))
         listing.amenities = [amenities[name] for name in sorted(amenity_names)]
 
-        listing.images = [
-            ListingImage(url=data.UNSPLASH.format(photo_id), position=pos)
-            for pos, photo_id in enumerate(_pick_photos(rng, category, used_covers))
+        # One different bedroom photo per bedroom, also used in "Where you'll sleep"
+        bedroom_photos = [_photo_url(p) for p in rng.sample(data.ROOM_PHOTOS["bedroom"], k=len(text["sleep"]))]
+        listing.bedroom_details = [
+            ListingBedroom(beds=beds_text, image_url=photo, position=i)
+            for i, (beds_text, photo) in enumerate(zip(text["sleep"], bedroom_photos))
         ]
+
+        # Photo order: cover, living room, first bedroom, kitchen, bathroom, other bedrooms
+        photos = [
+            _photo_url(data.COVERS[title]),
+            _photo_url(rng.choice(data.ROOM_PHOTOS["living"])),
+            bedroom_photos[0],
+            _photo_url(rng.choice(data.ROOM_PHOTOS["kitchen"])),
+            _photo_url(rng.choice(data.ROOM_PHOTOS["bathroom"])),
+            *bedroom_photos[1:],
+        ]
+        listing.images = [ListingImage(url=url, position=pos) for pos, url in enumerate(photos)]
 
         db.add(listing)
         listings.append(listing)
@@ -100,24 +121,22 @@ def _create_listings(
     return listings
 
 
-def _pick_photos(rng: random.Random, category: str, used_covers: set[str]) -> list[str]:
-    """A unique cover photo, followed by living room, bedroom, kitchen and bathroom shots."""
-    cover = _pick_cover(rng, category, used_covers)
-    used_covers.add(cover)
-    rooms = [rng.choice(data.IMAGE_POOLS[room]) for room in ("living", "bedroom", "kitchen", "bathroom")]
-    return [cover] + [photo for photo in rooms if photo != cover]
+def _check_sample_data() -> None:
+    """Fail loudly if the sample data is inconsistent, instead of seeding a broken demo."""
+    covers = [data.COVERS[row[0]] for row in data.LISTINGS]
+    duplicates = {c for c in covers if covers.count(c) > 1}
+    if duplicates:
+        raise ValueError(f"Cover photos used by more than one listing: {duplicates}")
+
+    for title, *_, bedrooms, beds, _baths, _host in data.LISTINGS:
+        sleep = LISTING_TEXT[title]["sleep"]
+        bed_total = sum(int(part.split()[0]) for room in sleep for part in room.split(","))
+        if len(sleep) != bedrooms or bed_total != beds:
+            raise ValueError(f"'{title}': sleeping arrangements don't match {bedrooms} bedrooms / {beds} beds")
 
 
-def _pick_cover(rng: random.Random, category: str, used: set[str]) -> str:
-    """Prefer an unused exterior that matches the category, then any unused exterior,
-    then an unused living room shot. Only reuse a photo if every one is taken."""
-    preferred = data.IMAGE_POOLS[data.CATEGORY_EXTERIOR[category]]
-    all_exteriors = [p for pool in data.EXTERIOR_POOLS for p in data.IMAGE_POOLS[pool]]
-    for candidates in (preferred, all_exteriors, data.IMAGE_POOLS["living"]):
-        unused = [p for p in candidates if p not in used]
-        if unused:
-            return rng.choice(unused)
-    return rng.choice(preferred)
+def _photo_url(photo_id: str) -> str:
+    return data.UNSPLASH.format(photo_id)
 
 
 def _create_bookings_and_reviews(
