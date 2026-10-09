@@ -75,6 +75,16 @@ def _search_conditions(params: ListingSearchParams) -> list[ColumnElement[bool]]
     return conditions
 
 
+def _card_query(ratings):
+    """SELECT listings with their rating, loading photos and host efficiently."""
+    return (
+        select(Listing, ratings.c.rating, ratings.c.review_count)
+        .outerjoin(ratings, ratings.c.listing_id == Listing.id)
+        # load photos and host in 2 extra queries instead of 1 query per listing
+        .options(selectinload(Listing.images), joinedload(Listing.host))
+    )
+
+
 def search_listings(db: Session, params: ListingSearchParams) -> ListingPage:
     conditions = _search_conditions(params)
     ratings = _rating_subquery()
@@ -82,15 +92,12 @@ def search_listings(db: Session, params: ListingSearchParams) -> ListingPage:
     total = db.scalar(select(func.count()).select_from(Listing).where(*conditions)) or 0
 
     rows = db.execute(
-        select(Listing, ratings.c.rating, ratings.c.review_count)
-        .outerjoin(ratings, ratings.c.listing_id == Listing.id)
+        _card_query(ratings)
         .where(*conditions)
         # best-rated first; id as a tie-breaker keeps the order stable between pages
         .order_by(ratings.c.rating.desc().nulls_last(), Listing.id)
         .offset((params.page - 1) * params.page_size)
         .limit(params.page_size)
-        # load photos and host in 2 extra queries instead of 1 query per listing
-        .options(selectinload(Listing.images), joinedload(Listing.host))
     ).all()
 
     items = [_to_card(listing, rating, count) for listing, rating, count in rows]
@@ -101,6 +108,16 @@ def search_listings(db: Session, params: ListingSearchParams) -> ListingPage:
         page_size=params.page_size,
         has_more=params.page * params.page_size < total,
     )
+
+
+def get_cards(db: Session, listing_ids: list[int]) -> list[ListingCard]:
+    """Cards for specific active listings, in the order the ids were given."""
+    ratings = _rating_subquery()
+    rows = db.execute(
+        _card_query(ratings).where(Listing.id.in_(listing_ids), Listing.is_active.is_(True))
+    ).all()
+    cards = {listing.id: _to_card(listing, rating, count) for listing, rating, count in rows}
+    return [cards[i] for i in listing_ids if i in cards]
 
 
 def get_filter_options(db: Session) -> FilterOptions:

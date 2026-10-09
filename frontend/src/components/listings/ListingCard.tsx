@@ -1,9 +1,9 @@
 "use client";
 
-import { Heart, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import Link from "next/link";
-import { toast } from "sonner";
 
+import { HeartButton } from "@/components/listings/HeartButton";
 import { ImageCarousel } from "@/components/listings/ImageCarousel";
 import { countNights, formatPrice, plural } from "@/lib/format";
 import type { ListingCard as ListingCardData } from "@/lib/types";
@@ -35,17 +35,9 @@ export function ListingCard({
           </span>
         )}
 
-        <button
-          type="button"
-          aria-label="Save to wishlist"
-          onClick={(e) => {
-            e.preventDefault(); // don't open the listing
-            toast("Saving to wishlists is coming soon");
-          }}
-          className="absolute right-3 top-3 transition-transform hover:scale-110"
-        >
-          <Heart size={24} className="fill-black/50 text-white" strokeWidth={2} />
-        </button>
+        <div className="absolute right-3 top-3">
+          <HeartButton listingId={listing.id} />
+        </div>
       </div>
 
       <div className="mt-3 text-[15px]">

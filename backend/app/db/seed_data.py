@@ -36,6 +36,15 @@ IMAGE_POOLS: dict[str, list[str]] = {
         "1570129477492-45c003edd2be",
         "1566073771259-6a8506099945",
     ],
+    # Extra exterior shots, used as cover photos once a category's own pool runs out
+    "extra_exterior": [
+        "1572120360610-d971b9d7767c",
+        "1583608205776-bfd35f0d9f83",
+        "1600585154526-990dced4db0d",
+        "1600566753086-00f18fb6b3ea",
+        "1605146769289-440113cc3d00",
+        "1613977257363-707ba9348227",
+    ],
     "living": [
         "1493809842364-78817add7ffb",
         "1586023492125-27b2c045efd7",
@@ -65,6 +74,8 @@ IMAGE_POOLS: dict[str, list[str]] = {
         "1620626011761-996317b8d101",
     ],
 }
+
+EXTERIOR_POOLS = ["beach", "mountain", "villa", "city", "heritage", "extra_exterior"]
 
 # Which exterior pool fits each category
 CATEGORY_EXTERIOR = {

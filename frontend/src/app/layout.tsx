@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { UserProvider } from "@/context/UserContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import { APP_NAME } from "@/lib/config";
 
 import "./globals.css";
@@ -19,9 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="flex min-h-screen flex-col antialiased">
         <UserProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <WishlistProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </WishlistProvider>
         </UserProvider>
         <Toaster
           position="bottom-left"

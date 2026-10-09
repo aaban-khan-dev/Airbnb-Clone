@@ -1,6 +1,7 @@
 from datetime import date, datetime
+from typing import Annotated
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 MAX_NIGHTS = 30
 
@@ -41,6 +42,12 @@ class BookingGuest(BaseModel):
     avatar_url: str | None
 
 
+class BookingReview(BaseModel):
+    rating: int
+    comment: str
+    created_at: datetime
+
+
 class BookingOut(BaseModel):
     id: int
     listing: BookingListing
@@ -55,3 +62,11 @@ class BookingOut(BaseModel):
     total_price: int
     status: str
     created_at: datetime
+    review: BookingReview | None = None  # the guest's review of this stay, if any
+
+
+class ReviewCreate(BaseModel):
+    """Body of POST /api/bookings/{id}/review."""
+
+    rating: int = Field(ge=1, le=5)
+    comment: Annotated[str, StringConstraints(strip_whitespace=True, min_length=10, max_length=1000)]

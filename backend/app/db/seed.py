@@ -25,7 +25,7 @@ def seed_database(db: Session) -> None:
     amenities = _create_amenities(db)
     listings = _create_listings(db, rng, users[:NUM_HOSTS], amenities)
     _create_bookings_and_reviews(db, rng, today, listings, users)
-    _create_wishlists(db, rng, listings, users)
+    _create_wishlists(db, rng, today, listings, users)
 
     db.commit()
 
@@ -57,6 +57,7 @@ def _create_listings(
     db: Session, rng: random.Random, hosts: list[User], amenities: dict[str, Amenity]
 ) -> list[Listing]:
     listings = []
+    used_covers: set[str] = set()  # every listing gets its own cover photo
     for (title, city, state, lat, lng, category, ptype, price,
          guests, bedrooms, beds, baths, host_index) in data.LISTINGS:
         description = data.DESCRIPTION_OPENERS[category].format(
@@ -90,7 +91,7 @@ def _create_listings(
 
         listing.images = [
             ListingImage(url=data.UNSPLASH.format(photo_id), position=pos)
-            for pos, photo_id in enumerate(_pick_photos(rng, category))
+            for pos, photo_id in enumerate(_pick_photos(rng, category, used_covers))
         ]
 
         db.add(listing)
@@ -99,15 +100,24 @@ def _create_listings(
     return listings
 
 
-def _pick_photos(rng: random.Random, category: str) -> list[str]:
-    exterior_pool = data.CATEGORY_EXTERIOR[category]
-    return [
-        rng.choice(data.IMAGE_POOLS[exterior_pool]),
-        rng.choice(data.IMAGE_POOLS["living"]),
-        rng.choice(data.IMAGE_POOLS["bedroom"]),
-        rng.choice(data.IMAGE_POOLS["kitchen"]),
-        rng.choice(data.IMAGE_POOLS["bathroom"]),
-    ]
+def _pick_photos(rng: random.Random, category: str, used_covers: set[str]) -> list[str]:
+    """A unique cover photo, followed by living room, bedroom, kitchen and bathroom shots."""
+    cover = _pick_cover(rng, category, used_covers)
+    used_covers.add(cover)
+    rooms = [rng.choice(data.IMAGE_POOLS[room]) for room in ("living", "bedroom", "kitchen", "bathroom")]
+    return [cover] + [photo for photo in rooms if photo != cover]
+
+
+def _pick_cover(rng: random.Random, category: str, used: set[str]) -> str:
+    """Prefer an unused exterior that matches the category, then any unused exterior,
+    then an unused living room shot. Only reuse a photo if every one is taken."""
+    preferred = data.IMAGE_POOLS[data.CATEGORY_EXTERIOR[category]]
+    all_exteriors = [p for pool in data.EXTERIOR_POOLS for p in data.IMAGE_POOLS[pool]]
+    for candidates in (preferred, all_exteriors, data.IMAGE_POOLS["living"]):
+        unused = [p for p in candidates if p not in used]
+        if unused:
+            return rng.choice(unused)
+    return rng.choice(preferred)
 
 
 def _create_bookings_and_reviews(
@@ -167,11 +177,12 @@ def _make_booking(
 
 
 def _create_wishlists(
-    db: Session, rng: random.Random, listings: list[Listing], users: list[User]
+    db: Session, rng: random.Random, today: date, listings: list[Listing], users: list[User]
 ) -> None:
     for user in users[NUM_HOSTS:]:  # guests save a few listings each
         for listing in rng.sample(listings, k=rng.randint(2, 5)):
-            db.add(WishlistItem(user=user, listing=listing))
+            saved_on = _at_noon(today - timedelta(days=rng.randint(5, 60)))
+            db.add(WishlistItem(user=user, listing=listing, created_at=saved_on))
 
 
 def _at_noon(day: date) -> datetime:

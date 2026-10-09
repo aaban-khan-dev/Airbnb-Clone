@@ -5,8 +5,15 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from app.models import Booking, Listing, User
-from app.schemas.booking import BookingCreate, BookingGuest, BookingListing, BookingOut
+from app.models import Booking, Listing, Review, User
+from app.schemas.booking import (
+    BookingCreate,
+    BookingGuest,
+    BookingListing,
+    BookingOut,
+    BookingReview,
+    ReviewCreate,
+)
 from app.services.availability import is_available
 from app.services.pricing import calculate_price
 
@@ -92,12 +99,41 @@ def cancel_booking(db: Session, booking_id: int, guest: User) -> BookingOut:
     return to_booking_out(booking)
 
 
+def leave_review(db: Session, booking_id: int, guest: User, data: ReviewCreate) -> BookingOut:
+    """Only the guest of a completed (not cancelled) stay can review it, once."""
+    booking = get_booking_for_user(db, booking_id, guest)
+    if booking.guest_id != guest.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only the guest can review this stay")
+    if booking.status != "confirmed" or booking.check_out > date.today():
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "You can review a stay once it's completed")
+    if booking.review is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "You've already reviewed this stay")
+
+    db.add(
+        Review(
+            booking_id=booking.id,
+            listing_id=booking.listing_id,
+            author_id=guest.id,
+            rating=data.rating,
+            comment=data.comment,
+        )
+    )
+    try:
+        db.commit()
+    except IntegrityError:  # unique booking_id: a second review sent at the same moment
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "You've already reviewed this stay")
+    db.refresh(booking)
+    return to_booking_out(booking)
+
+
 def with_booking_details(query):
-    """Load each booking's listing (with photos and host) and guest in a few queries."""
+    """Load each booking's listing (with photos and host), guest and review in a few queries."""
     return query.options(
         joinedload(Booking.listing).selectinload(Listing.images),
         joinedload(Booking.listing).joinedload(Listing.host),
         joinedload(Booking.guest),
+        selectinload(Booking.review),
     )
 
 
@@ -130,4 +166,13 @@ def to_booking_out(booking: Booking) -> BookingOut:
         total_price=booking.total_price,
         status=booking.status,
         created_at=booking.created_at,
+        review=(
+            BookingReview(
+                rating=booking.review.rating,
+                comment=booking.review.comment,
+                created_at=booking.review.created_at,
+            )
+            if booking.review
+            else None
+        ),
     )

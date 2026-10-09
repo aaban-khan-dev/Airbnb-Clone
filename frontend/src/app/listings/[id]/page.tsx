@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Medal, Share, Star } from "lucide-react";
+import { Medal, Share, Star } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { AmenitiesSection } from "@/components/listing-detail/AmenitiesSection";
 import { BookingCard } from "@/components/listing-detail/BookingCard";
+import { HeartButton } from "@/components/listings/HeartButton";
 import { HostSection } from "@/components/listing-detail/HostSection";
 import { LocationMap } from "@/components/listing-detail/LocationMap";
 import { PhotoGrid } from "@/components/listing-detail/PhotoGrid";
@@ -131,13 +132,7 @@ function ListingPageContent() {
           >
             <Share size={16} /> Share
           </button>
-          <button
-            type="button"
-            onClick={() => toast("Saving to wishlists is coming soon")}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 underline hover:bg-surface"
-          >
-            <Heart size={16} /> Save
-          </button>
+          <HeartButton listingId={l.id} variant="text" />
         </div>
       </div>
 

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.init_db import init_db
-from app.routers import bookings, health, host, listings, users
+from app.routers import bookings, health, host, listings, users, wishlist
 
 
 @asynccontextmanager
@@ -29,3 +29,4 @@ app.include_router(users.router, prefix="/api")
 app.include_router(listings.router, prefix="/api")
 app.include_router(bookings.router, prefix="/api")
 app.include_router(host.router, prefix="/api")
+app.include_router(wishlist.router, prefix="/api")

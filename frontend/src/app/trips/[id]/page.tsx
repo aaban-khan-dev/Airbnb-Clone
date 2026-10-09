@@ -1,12 +1,13 @@
 "use client";
 
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Star } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { PriceBreakdown } from "@/components/booking/PriceBreakdown";
+import { ReviewForm } from "@/components/booking/ReviewForm";
 import { ListingPhoto } from "@/components/listings/ListingPhoto";
 import { Container } from "@/components/ui/Container";
 import { Modal } from "@/components/ui/Modal";
@@ -141,6 +142,25 @@ function TripDetails() {
             totalPrice={booking.total_price}
             totalLabel={booking.status === "cancelled" ? "Total (refunded)" : "Total paid (INR)"}
           />
+
+          {/* Reviews: only for completed stays, once */}
+          {status === "past" && (
+            <div className="mt-8">
+              {booking.review ? (
+                <div className="rounded-xl bg-surface p-5">
+                  <p className="text-sm font-semibold">Your review</p>
+                  <div className="mt-1 flex gap-0.5" aria-label={`Rated ${booking.review.rating} out of 5`}>
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <Star key={i} size={14} className={i < booking.review!.rating ? "fill-ink text-ink" : "text-line"} />
+                    ))}
+                  </div>
+                  <p className="mt-2">{booking.review.comment}</p>
+                </div>
+              ) : (
+                <ReviewForm bookingId={booking.id} onReviewed={setBooking} />
+              )}
+            </div>
+          )}
 
           {canCancel(booking) && (
             <button

@@ -118,6 +118,7 @@ export type Booking = {
   total_price: number;
   status: "confirmed" | "cancelled";
   created_at: string;
+  review: { rating: number; comment: string; created_at: string } | null;
 };
 
 // Values of the host's create/edit listing form (matches the backend's ListingWrite)

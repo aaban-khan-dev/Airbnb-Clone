@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import get_current_user
 from app.db.session import get_db
 from app.models import User
-from app.schemas.booking import BookingCreate, BookingOut
+from app.schemas.booking import BookingCreate, BookingOut, ReviewCreate
 from app.services import booking_service
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -44,3 +44,14 @@ def cancel_booking(
 ):
     """Cancel an upcoming trip. Its nights become available again."""
     return booking_service.cancel_booking(db, booking_id, current_user)
+
+
+@router.post("/{booking_id}/review", response_model=BookingOut, status_code=status.HTTP_201_CREATED)
+def review_stay(
+    booking_id: int,
+    data: ReviewCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Leave a review after a completed stay (one per booking)."""
+    return booking_service.leave_review(db, booking_id, current_user, data)
