@@ -1,404 +1,241 @@
-# Airbnb Clone — Full-Stack Stay Booking Platform
+<div align="center">
 
-A full-stack accommodation booking application built for the Scaler SDE Fullstack assignment. Guests can discover stays, filter listings, view property details, book date ranges, and manage trips. Hosts can create and manage listings and review reservations.
+# Airbnb Clone
 
-The interface follows a photo-first marketplace layout with responsive pages, listing galleries, booking summaries, dialogs, and toast notifications.
+**A full-stack stay booking platform: browse, search, book and host.**
 
-- **Live application:** _Add your Vercel deployment URL_
-- **API documentation:** _Add your Railway deployment URL_ followed by `/docs`
-- **GitHub repository:** _Add your repository URL_
+Built for the Scaler SDE Fullstack assignment with Next.js, FastAPI and SQLite.
 
-> **Project note:** This is an independent assignment project. It uses its own implementation and branding and is not affiliated with Airbnb.
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+
+| | Link |
+| :-- | :-- |
+| **Live app** | https://airbnb-clone-seven-pi-11.vercel.app |
+| **API docs (Swagger)** | https://YOUR-BACKEND.up.railway.app/docs |
+| **Repository** | https://github.com/aaban-khan-dev/Airbnb-Clone |
+
+</div>
+
+> **Note:** An independent educational project built for an assignment. It is not affiliated with or endorsed by Airbnb, Inc.
+
+---
 
 ## Table of Contents
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Technology Stack](#technology-stack)
-- [System Design and Architecture](#system-design-and-architecture)
-- [Booking Concurrency and Availability](#booking-concurrency-and-availability)
-- [Database Schema](#database-schema)
-- [API Reference](#api-reference)
-- [Assumptions and Scope](#assumptions-and-scope)
-- [Challenges and Implementation Notes](#challenges-and-implementation-notes)
-- [Known Limitations](#known-limitations)
-- [Potential Improvements](#potential-improvements)
+| # | Section | What's inside |
+| :-: | :-- | :-- |
+| 1 | [Features](#features) | Everything guests and hosts can do |
+| 2 | [Getting Started](#getting-started) | Run the backend and frontend locally |
+| 3 | [Tech Stack](#tech-stack) | Libraries and why they were chosen |
+| 4 | [Architecture](#architecture) | HLD diagram, folder structure, design decisions |
+| 5 | [Preventing Double Bookings](#preventing-double-bookings) | API check + database trigger |
+| 6 | [Database Schema](#database-schema) | ER diagram, design decisions, seed data |
+| 7 | [API Overview](#api-overview) | Endpoints and status codes |
+| 8 | [Deployment](#deployment) | Vercel + Railway setup |
+| 9 | [Assumptions](#assumptions) | Scope decisions and mocked parts |
+| 10 | [Challenges and Future Work](#challenges-and-future-work) | What was hard, what's missing, what's next |
+
+---
 
 ## Features
 
-  -----------------------------------------------------------------------
-  Area                                Features
-  ----------------------------------- -----------------------------------
-  **Home and search**                 Photo-card grid with carousel
-                                      controls; location, date, and guest
-                                      search; category navigation;
-                                      filters for price, property type,
-                                      and amenities; live result counts;
-                                      infinite scrolling; list and map
-                                      views.
+| Area | Highlights |
+| :-- | :-- |
+| **Home & search** | Photo-card grid with carousels · search by location, dates and guests · category menu · filters for price, property type and amenities with a live count · infinite scroll · list and map views |
+| **Listing page** | Photo gallery · "About this space" with Show more · Where you'll sleep · amenities · availability calendar · price breakdown · reviews · area map · host card · house rules, safety and cancellation policy |
+| **Booking** | Guest and date validation · checkout summary with mocked payment · confirmation page · upcoming, past and cancelled trips · cancellation · double-booking protection in the API **and** the database |
+| **Host tools** | Dashboard with stats · create, edit and delete listings (photos, amenities, bedrooms, house rules) · reservations across all owned listings |
+| **Experience** | Wishlists · toasts for every action · modals · mobile tab bar and bottom reserve bar |
+| **Bonus** | Interactive map with price pins · reviews after completed stays · Superhost and Guest favourite badges · aggregated ratings · light, dark and system themes · mobile, tablet and desktop layouts |
+| **Mocked** | Switch between demo users instead of logging in · simulated checkout · messaging, language and currency marked "Coming soon" |
 
-  **Listing details**                 Photo gallery; expandable property
-                                      description; sleeping arrangements;
-                                      amenities; availability calendar
-                                      with booked nights marked; price
-                                      breakdown; reviews; approximate
-                                      area map; host information; house
-                                      rules, safety information, and
-                                      cancellation policy.
-
-  **Booking**                         Guest and date validation; checkout
-                                      summary with mocked payment;
-                                      booking confirmation; upcoming,
-                                      past, and cancelled trips; trip
-                                      cancellation; overlap protection in
-                                      both the API and database.
-
-  **Host tools**                      Dashboard with listing statistics;
-                                      create, edit, and deactivate
-                                      listings; configure photo URLs,
-                                      amenities, bedrooms, and house
-                                      rules; view reservations across
-                                      owned listings.
-
-  **Marketplace experience**          Wishlists; action toasts; reusable
-                                      dialogs; responsive mobile
-                                      navigation and a bottom reservation
-                                      bar.
-
-  **Optional enhancements**           Interactive map with price pins;
-                                      reviews after completed stays;
-                                      aggregated ratings; Superhost and
-                                      Guest favourite badges; light,
-                                      dark, and system theme options;
-                                      layouts for mobile, tablet, and
-                                      desktop.
-
-  **Mocked or placeholder features**  Demo-user switching instead of real
-                                      login; simulated checkout;
-                                      messaging marked as coming soon;
-                                      placeholder language and currency
-                                      controls.
-  -----------------------------------------------------------------------
-
-------------------------------------------------------------------------
+---
 
 ## Getting Started
 
-### Prerequisites
+**Prerequisites:** Python 3.11+ · Node.js 20.9+ with npm · Git
 
--   Python 3.11 or later
--   Node.js 20.9 or later and npm (required by Next.js 16)
--   Git
+### 1. Clone
 
-### 1. Clone the repository
-
-``` bash
-git clone <your-repo-url>
-cd airbnb-clone
+```bash
+git clone https://github.com/aaban-khan-dev/Airbnb-Clone.git
+cd Airbnb-Clone
 ```
 
-Replace `<your-repo-url>` with the repository URL. If the repository
-directory has a different name, change the `cd` command accordingly.
+### 2. Backend: FastAPI on port 8000
 
-### 2. Start the backend
-
-The FastAPI service runs on port `8000`.
-
-``` bash
+```bash
 cd backend
 python -m venv .venv
-```
-
-Activate the virtual environment:
-
-**Windows PowerShell**
-
-``` powershell
-.venv\Scripts\Activate.ps1
-```
-
-**macOS / Linux**
-
-``` bash
-source .venv/bin/activate
-```
-
-Install the dependencies and launch the development server:
-
-``` bash
+.venv\Scripts\Activate.ps1        # Windows PowerShell
+source .venv/bin/activate         # macOS / Linux
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-On first startup, the application creates `backend/airbnb.db` and seeds
-it with demo data. Interactive API documentation is available at
-<http://localhost:8000/docs>.
+On first start the backend creates `airbnb.db` and fills it with demo data. API docs: http://localhost:8000/docs
 
-Optional backend configuration can be supplied through `backend/.env`;
-see `backend/.env.example`.
+Optional `backend/.env` (see `.env.example`):
 
-  -------------------------------------------------------------------------
-  Variable                Default                   Purpose
-  ----------------------- ------------------------- -----------------------
-  `DATABASE_URL`          `sqlite:///./airbnb.db`   Database connection
-                                                    string.
+| Variable | Default | Purpose |
+| :-- | :-- | :-- |
+| `DATABASE_URL` | `sqlite:///./airbnb.db` | Location of the SQLite file |
+| `ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated frontend URLs allowed by CORS |
 
-  `ALLOWED_ORIGINS`       `http://localhost:3000`   Comma-separated list of
-                                                    frontend origins
-                                                    permitted by CORS.
-  -------------------------------------------------------------------------
+### 3. Frontend: Next.js on port 3000
 
-### 3. Start the frontend
-
-Open a second terminal:
-
-``` bash
+```bash
 cd frontend
 npm install
 ```
 
-Create `frontend/.env.local` using `frontend/.env.example` as a
-reference:
+Create `frontend/.env.local`:
 
-``` env
+```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Start the development server:
-
-``` bash
+```bash
 npm run dev
 ```
 
-Open <http://localhost:3000> in your browser.
+Open http://localhost:3000.
 
 ### Useful commands
 
-  ----------------------------------------------------------------------------------
-  Command                            Directory               Purpose
-  ---------------------------------- ----------------------- -----------------------
-  Delete `airbnb.db`, then restart   `backend/`              Recreates the demo
-  the backend                                                database. This is
-                                                             required after model
-                                                             changes because the
-                                                             project uses
-                                                             `create_all` rather
-                                                             than database
-                                                             migrations.
+| Command | Folder | Purpose |
+| :-- | :-- | :-- |
+| Delete `airbnb.db`, restart backend | `backend/` | Re-seed a fresh database (needed after model changes; there are no migrations) |
+| `python -m scripts.check_images` | `backend/` | Check that every sample photo URL loads |
+| `npm run lint` · `npx tsc --noEmit` · `npm run build` | `frontend/` | Lint, type-check and production build |
 
-  `python -m scripts.check_images`   `backend/`              Checks whether the
-                                                             sample photo URLs are
-                                                             reachable.
+### Try the demo
 
-  `npm run lint`                     `frontend/`             Runs the frontend
-                                                             linter.
+There's no login. A default user is signed in, and **profile menu → Switch user** changes users (each one is labelled Host or Guest).
 
-  `npx tsc --noEmit`                 `frontend/`             Checks TypeScript types
-                                                             without emitting files.
+- **As a guest:** search "Goa", pick dates, open a listing, reserve, then find the trip under **Trips**.
+- **As a host:** switch to **Kabir Singh**, then click **Switch to hosting** to see his listings, stats and reservations.
 
-  `npm run build`                    `frontend/`             Creates a production
-                                                             build.
-  ----------------------------------------------------------------------------------
+---
 
-### Explore the demo
+## Tech Stack
 
-Authentication is simulated. The app starts with a default user, and the
-profile menu provides **Switch user** to select another seeded account.
-Users are labelled as hosts or guests.
+| Layer | Technology | Why |
+| :-- | :-- | :-- |
+| Frontend | Next.js 16 (App Router), React 19, TypeScript | File-based routing that maps onto Airbnb's pages, typed components |
+| Styling | Tailwind CSS v4 | Design tokens in one place, class-based dark mode |
+| Maps | Leaflet, React Leaflet, OpenStreetMap | Interactive maps, no paid API key |
+| UI helpers | lucide-react, sonner, date-fns | Icons, toasts, date handling |
+| Backend | FastAPI | Request validation and auto-generated Swagger docs |
+| ORM | SQLAlchemy 2.0 | Typed models, relationships, eager loading, constraints |
+| Validation | Pydantic v2, pydantic-settings | Request/response schemas, config from env vars |
+| Database | SQLite | Foreign keys enforced, plus a trigger that blocks overlapping bookings |
+| Hosting | Vercel (frontend), Railway (backend + persistent volume) | Free tiers, SQLite file survives redeploys |
 
--   **Guest workflow:** Search for "Goa", choose dates, open a listing,
-    complete the demo reservation and checkout, then review the booking
-    in **Trips**.
--   **Host workflow:** Switch to **Kabir Singh**, then choose **Switch
-    to hosting** or **Manage listings** to view listings, dashboard
-    statistics, reservations, and listing-management controls.
+---
 
-------------------------------------------------------------------------
+## Architecture
 
-## Technology Stack
+### High-level design
 
-  -----------------------------------------------------------------------
-  Layer                   Technology              Rationale
-  ----------------------- ----------------------- -----------------------
-  **Frontend**            Next.js 16 (App         Provides file-based
-                          Router), React 19,      routing and a typed
-                          TypeScript              component model for the
-                                                  marketplace interface.
+```mermaid
+flowchart LR
+    U["👤 User<br/>desktop / tablet / mobile"]
 
-  **Styling**             Tailwind CSS v4         Centralizes design
-                                                  tokens in `globals.css`
-                                                  and supports
-                                                  class-based dark mode.
+    subgraph VERCEL["Vercel"]
+        direction TB
+        FE["Next.js frontend<br/>pages · components · hooks"]
+        CTX["React Context<br/>current user · wishlist · theme"]
+        CLIENT["lib/api.ts<br/>adds X-User-Id header"]
+        FE --- CTX
+        FE --> CLIENT
+    end
 
-  **Maps**                Leaflet, React Leaflet, Provides interactive
-                          OpenStreetMap tiles     maps without requiring
-                                                  a paid API key.
+    subgraph RAILWAY["Railway"]
+        direction TB
+        AUTH["Mock auth dependency<br/>get_current_user"]
+        RT["Routers<br/>users · listings · bookings · host · wishlist"]
+        SV["Services<br/>search · pricing · availability · booking · host CRUD"]
+        MD["SQLAlchemy models"]
+        DB[("SQLite<br/>/data/airbnb.db<br/>persistent volume")]
+        RT --> AUTH
+        RT --> SV --> MD --> DB
+    end
 
-  **UI utilities**        `lucide-react`,         Provides icons, toast
-                          `sonner`, `date-fns`    notifications, and date
-                                                  utilities.
+    EXT["Unsplash photos<br/>OpenStreetMap tiles"]
 
-  **Backend**             FastAPI (Python)        Exposes the application
-                                                  API with request
-                                                  validation and
-                                                  automatic
-                                                  OpenAPI/Swagger
-                                                  documentation.
-
-  **ORM**                 SQLAlchemy 2.0          Defines typed models,
-                                                  relationships, eager
-                                                  loading, and database
-                                                  constraints.
-
-  **Validation and        Pydantic v2,            Defines
-  configuration**         `pydantic-settings`     request/response
-                                                  schemas and loads
-                                                  environment-based
-                                                  settings.
-
-  **Database**            SQLite                  Provides persistent
-                                                  relational storage for
-                                                  the assignment, with
-                                                  foreign-key enforcement
-                                                  and a trigger to reject
-                                                  overlapping
-                                                  reservations.
-
-  **Deployment**          Vercel (frontend),      Separates frontend and
-                          Railway (backend)       API deployment; the
-                                                  backend uses a
-                                                  persistent volume for
-                                                  the SQLite database.
-  -----------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
-## System Design and Architecture
-
-``` text
-Browser (Next.js application)
-        |
-        | fetch() requests with X-User-Id header (mock authentication)
-        v
-FastAPI routers
-        |  HTTP layer: parse requests, invoke services, return schemas
-        v
-Service layer
-        |  Business rules: search, pricing, availability, booking, host CRUD
-        v
-SQLAlchemy models
-        |
-        v
-SQLite database (airbnb.db)
+    U -->|HTTPS| FE
+    CLIENT -->|"REST · JSON"| RT
+    U -.->|"images and map tiles"| EXT
 ```
 
-### Backend Structure
+The browser talks only to the Next.js app and the FastAPI REST API. Photos and map tiles load straight from their public CDNs. Every request goes **router → service → model → database**, and protected routes resolve the current user through a single auth dependency.
 
-Located in `backend/app`:
+### Folder structure
 
-``` text
-app/
-├── main.py       Application setup, CORS, routers, table creation, and seeding
-├── core/         Settings, mock-auth dependency, and shared constants
-├── db/           Engine, sessions, database initialization, and seed data
-├── models/       SQLAlchemy models for users, listings, bookings, reviews, wishlists, etc.
-├── schemas/      Pydantic request and response models
-├── services/     Business logic, organized by domain
-└── routers/      HTTP endpoints, organized by resource
+<table>
+<tr><th>Backend: <code>backend/app</code></th><th>Frontend: <code>frontend/src</code></th></tr>
+<tr><td>
+
+```text
+main.py     app setup, CORS, startup seed
+core/       settings, mock auth, constants
+db/         engine, session, seed data
+models/     SQLAlchemy tables
+schemas/    Pydantic request/response models
+services/   business logic by domain
+routers/    endpoints by resource
 ```
 
-Key backend design decisions:
+</td><td>
 
--   **Layered responsibilities:** Routers handle HTTP concerns and
-    delegate business logic to services. Services are separated from
-    request handling, making the code easier to review and test.
--   **Centralized mock authentication:** `get_current_user` reads
-    `X-User-Id` and returns `401` when the header is missing or the user
-    is unknown. Protected endpoints use this dependency, providing a
-    single integration point for replacing demo authentication with JWT
-    or session-based authentication.
--   **Ownership enforcement:** Host operations resolve listings through
-    `get_owned_listing`, preventing one host from modifying another
-    host's listings. Guests can access and cancel only their own
-    bookings.
--   **Consistent pricing:** `services/pricing.py` is shared by quote
-    generation, booking creation, and seed data. The service fee is
-    calculated as 14% of the nightly subtotal.
--   **Query efficiency:** Listing searches eager-load photos with
-    `selectinload`. Host dashboard statistics use grouped queries rather
-    than issuing a separate statistics query for every listing.
-
-### Frontend Structure
-
-Located in `frontend/src`:
-
-``` text
-src/
-├── app/          Pages and route segments
-├── components/   Feature-oriented UI: layout, search, listings, booking, host, map, and UI
-├── context/      Current user, wishlist, and theme contexts
-├── hooks/        Search, price quote, scroll state, and click-outside hooks
-└── lib/          API client, types, formatting, and URL/search helpers
+```text
+app/          pages and routes
+components/   UI grouped by feature
+context/      user, wishlist, theme
+hooks/        search, quote, scroll, click-outside
+lib/          API client, types, helpers
 ```
 
-The main routes include `/`, `/listings/[id]`, `/book/[id]`, `/trips`,
-`/trips/[id]`, `/wishlists`, `/host`, `/host/listings/new`,
-`/host/listings/[id]/edit`, and `/messages`.
+</td></tr>
+</table>
 
-Key frontend design decisions:
+### Key design decisions
 
--   **URL-driven search state:** Location, dates, guest count, category,
-    and filters are stored in query parameters. Search state therefore
-    survives refreshes, browser navigation, and shared links.
--   **Shared API client:** `lib/api.ts` adds the user header and
-    converts FastAPI errors---including `422` validation
-    responses---into readable messages for forms and toast
-    notifications.
--   **Reusable components:** Shared components include `Modal`
-    (portal-rendered), `DateRangeCalendar`, `Counter`, and
-    `ListingPhoto`, which falls back to a placeholder when an image URL
-    fails.
--   **Responsive layouts:** Mobile layouts use a full-screen search
-    sheet, bottom tab bar, photo slider, and bottom reservation bar.
-    Desktop layouts use a search header that compacts on scroll and a
-    sticky booking card.
--   **Theme initialization:** Dark mode is applied through a `dark`
-    class on `<html>`, using a small pre-render script to reduce flashes
-    of the wrong theme. Map tiles are styled to fit the selected theme.
+- **Layered backend:** routers never touch SQL. They call services, which return Pydantic schemas.
+- **One auth hook:** `get_current_user` reads `X-User-Id` (401 if missing or unknown). Real auth (JWT or sessions) would replace only this function.
+- **Ownership checks:** hosts can only see and edit their own listings, and guests can only see and cancel their own trips.
+- **Pricing in one place:** `services/pricing.py` is shared by quotes, bookings and the seed. The service fee is 14% of the nightly subtotal.
+- **No N+1 queries:** photos load with `selectinload`, and dashboard stats use grouped queries.
+- **URL holds the search state:** filters, dates and guests survive refresh, Back and shared links.
+- **Shared API client:** `lib/api.ts` adds the user header and turns FastAPI errors (including 422s) into readable messages.
+- **Responsive by breakpoints:** phones get a search sheet, tab bar, photo slider and reserve bar; desktop gets the shrinking search header and a sticky booking card.
+- **Dark mode without a flash:** a tiny script sets the theme before the page paints.
 
-------------------------------------------------------------------------
+---
 
-## Booking Concurrency and Availability
+## Preventing Double Bookings
 
-Preventing overlapping reservations requires more than an
-application-level availability check: two concurrent requests could
-otherwise both pass the check before either inserts a booking.
+An availability check alone has a race condition: two requests can both pass it before either one saves. So the app uses two layers:
 
-airbnb uses two safeguards:
+1. **Service check:** `booking_service` rejects overlapping confirmed bookings with **409 Conflict**.
+2. **Database trigger:** a SQLite `BEFORE INSERT/UPDATE` trigger repeats the check inside the write, so the second booking always fails.
 
-1.  **Service-level validation:** Before creating a reservation,
-    `booking_service` checks for confirmed bookings on the same listing
-    with overlapping dates. If a conflict exists, the API returns
-    `409 Conflict`.
-2.  **Database trigger:** A SQLite `BEFORE INSERT/UPDATE` trigger
-    repeats the overlap check at the database level. This provides a
-    final guard when concurrent requests reach the insertion stage.
+With the service check turned off, 10 simultaneous requests for the same dates produced **1 booking and 9 rejections**.
 
-In a test with the service-level check disabled, 10 simultaneous
-requests for the same dates resulted in one booking and nine rejections.
+Date ranges are **half-open** (check-in included, checkout excluded), so one guest can check out on the day the next one checks in.
 
-Booking intervals are **half-open**: check-in is included, while
-check-out is excluded. A guest can therefore check out on the same date
-that the next guest checks in.
-
-------------------------------------------------------------------------
+---
 
 ## Database Schema
 
-The database contains **9 tables**. Monetary values are stored as
-whole-number rupees to avoid floating-point rounding issues.
+**9 tables.** Money is stored as whole rupees (integers) to avoid floating-point errors.
 
-``` mermaid
+```mermaid
 erDiagram
     USERS ||--o{ LISTINGS : hosts
     USERS ||--o{ BOOKINGS : makes
@@ -506,375 +343,120 @@ erDiagram
     }
 ```
 
-### Schema Design Decisions
-
-  -------------------------------------------------------------------------
-  Decision                            Rationale
-  ----------------------------------- -------------------------------------
-  **A single `users` table for hosts  The same user can act as a guest and
-  and guests**                        a host. Host capabilities are
-                                      associated with owning listings.
-
-  **Price snapshots on bookings**     The booking stores `nightly_price`,
-                                      `cleaning_fee`, `service_fee`, and
-                                      `total_price`, preserving the agreed
-                                      price if the host later changes a
-                                      listing's rate.
-
-  **Soft deletion for listings**      `listings.is_active` hides a listing
-                                      while retaining historical bookings,
-                                      reviews, and earnings records.
-                                      Upcoming bookings are cancelled when
-                                      a listing is deactivated.
-
-  **Computed ratings**                Listing ratings are calculated from
-                                      reviews using grouped averages rather
-                                      than stored separately, avoiding
-                                      stale aggregate values.
-
-  **One review per booking**          A unique constraint on
-                                      `reviews.booking_id` prevents
-                                      duplicate reviews for the same stay.
-                                      Application rules restrict reviews to
-                                      completed stays.
-
-  **Composite primary keys**          `listing_amenities` and
-                                      `wishlist_items` prevent duplicate
-                                      associations at the database level.
-
-  **Database constraints**            Check constraints validate positive
-                                      nightly prices, guest counts, valid
-                                      date ranges, ratings from 1--5, and
-                                      allowed booking statuses.
-
-  **Overlap trigger and index**       The trigger rejects conflicting
-                                      reservations, while an index on
-                                      `(listing_id, check_in, check_out)`
-                                      supports availability queries.
-
-  **Foreign-key enforcement**         `PRAGMA foreign_keys=ON` is applied
-                                      to every connection because SQLite
-                                      does not enforce foreign keys by
-                                      default.
-
-  **Cascading deletes**               Images, bedrooms, amenity links, and
-                                      wishlist items are removed with their
-                                      associated parent records where
-                                      appropriate.
-
-  **Separate image and bedroom        Position fields preserve gallery
-  tables**                            order and allow listings to contain
-                                      multiple bedrooms.
-  -------------------------------------------------------------------------
-
-### Seed Data
-
-The database is seeded automatically when it is empty. A fixed random
-seed makes the sample dataset reproducible. Booking dates are generated
-relative to the current date so that the demo includes past stays with
-reviews and upcoming reservations that block calendar dates.
-
-  -----------------------------------------------------------------------
-  Table                                                    Seeded records
-  ------------------------------ ----------------------------------------
-  Users                                            12 (6 hosts, 6 guests)
-
-  Listings                              32 across 28 cities, 12 states, 7
-                                         property types, and 8 categories
-
-  Listing images                  195, with a unique cover photo for each
-                                                                  listing
-
-  Listing bedrooms                                                     67
-
-  Amenities / listing-amenity                                    16 / 250
-  associations                   
-
-  Bookings                            212, including 66 upcoming bookings
-
-  Reviews                                                             122
-
-  Wishlist items                                                       21
-  -----------------------------------------------------------------------
-
-Nightly listing prices range from ₹2,600 to ₹18,500.
-
-------------------------------------------------------------------------
-
-## API Reference
-
-**Local base URL:** `http://localhost:8000`\
-**Interactive documentation:** [`/docs`](http://localhost:8000/docs)
-
-Requests that operate on behalf of a user include the `X-User-Id: <id>`
-header. This header is part of the demo authentication mechanism, not
-production-grade authentication.
-
-  ----------------------------------------------------------------------------------------
-  Method          Endpoint                       Description           User required
-  --------------- ------------------------------ --------------- -------------------------
-  `GET`           `/api/health`                  Health check,              No
-                                                 including a     
-                                                 database ping.  
-
-  `GET`           `/api/users`                   Lists users for            No
-                                                 the Switch user 
-                                                 menu.           
-
-  `GET`           `/api/users/me`                Returns the                Yes
-                                                 current user.   
-
-  `GET`           `/api/listings`                Searches                   No
-                                                 listings by     
-                                                 location,       
-                                                 dates, guests,  
-                                                 category,       
-                                                 property type,  
-                                                 amenities,      
-                                                 price, and      
-                                                 pagination      
-                                                 parameters.     
-
-  `GET`           `/api/listings/filters`        Returns                    No
-                                                 categories,     
-                                                 property types, 
-                                                 amenities, and  
-                                                 price-range     
-                                                 options.        
-
-  `GET`           `/api/listings/{id}`           Returns listing            No
-                                                 details,        
-                                                 photos,         
-                                                 bedrooms,       
-                                                 amenities,      
-                                                 host, reviews,  
-                                                 rules, and      
-                                                 booked date     
-                                                 ranges.         
-
-  `GET`           `/api/listings/{id}/quote`     Returns pricing            No
-                                                 and             
-                                                 availability    
-                                                 for the         
-                                                 requested dates 
-                                                 and guest       
-                                                 count.          
-
-  `POST`          `/api/bookings`                Creates a                  Yes
-                                                 booking         
-                                                 (`201`);        
-                                                 returns `409`   
-                                                 if dates are no 
-                                                 longer          
-                                                 available.      
-
-  `GET`           `/api/bookings/me`             Lists the                  Yes
-                                                 current user's  
-                                                 trips.          
-
-  `GET`           `/api/bookings/{id}`           Returns a                  Yes
-                                                 booking         
-                                                 belonging to    
-                                                 the current     
-                                                 user.           
-
-  `POST`          `/api/bookings/{id}/cancel`    Cancels an                 Yes
-                                                 eligible        
-                                                 upcoming trip.  
-
-  `POST`          `/api/bookings/{id}/review`    Creates a                  Yes
-                                                 review for a    
-                                                 completed stay  
-                                                 (`201`).        
-
-  `GET`           `/api/host/listings`           Lists the                  Yes
-                                                 host's          
-                                                 properties with 
-                                                 ratings,        
-                                                 upcoming        
-                                                 bookings, and   
-                                                 earnings        
-                                                 statistics.     
-
-  `POST`          `/api/host/listings`           Creates a                  Yes
-                                                 listing         
-                                                 (`201`).        
-
-  `GET`           `/api/host/listings/{id}`      Returns a                  Yes
-                                                 listing's       
-                                                 current values  
-                                                 for the edit    
-                                                 form.           
-
-  `PUT`           `/api/host/listings/{id}`      Updates an                 Yes
-                                                 owned listing.  
-
-  `DELETE`        `/api/host/listings/{id}`      Deactivates a              Yes
-                                                 listing and     
-                                                 cancels its     
-                                                 upcoming        
-                                                 bookings.       
-
-  `GET`           `/api/host/bookings`           Lists                      Yes
-                                                 reservations    
-                                                 for the host's  
-                                                 listings, with  
-                                                 optional        
-                                                 `listing_id`    
-                                                 and `when`      
-                                                 filters.        
-
-  `GET`           `/api/wishlist`                Lists the                  Yes
-                                                 current user's  
-                                                 saved listings. 
-
-  `GET`           `/api/wishlist/ids`            Returns saved              Yes
-                                                 listing IDs for 
-                                                 wishlist        
-                                                 controls.       
-
-  `PUT`           `/api/wishlist/{listing_id}`   Saves a listing            Yes
-                                                 (`204`;         
-                                                 idempotent).    
-
-  `DELETE`        `/api/wishlist/{listing_id}`   Removes a saved            Yes
-                                                 listing (`204`; 
-                                                 idempotent).    
-  ----------------------------------------------------------------------------------------
-
-### HTTP Status Codes
-
-  -----------------------------------------------------------------------
-                                      Code Meaning
-  ---------------------------------------- ------------------------------
-                                     `200` Request completed
-                                           successfully.
-
-                                     `201` Resource created.
-
-                                     `204` Request completed with no
-                                           response body.
-
-                                     `400` A business rule prevents the
-                                           action, such as cancelling a
-                                           trip after it has started.
-
-                                     `401` User header is missing or
-                                           identifies an unknown user.
-
-                                     `403` The action is forbidden.
-
-                                     `404` Resource does not exist or is
-                                           not accessible to the current
-                                           user.
-
-                                     `409` Reservation dates conflict
-                                           with an existing booking.
-
-                                     `422` Request validation failed;
-                                           field-level details are
-                                           returned.
-
-                                     `503` Database is temporarily busy;
-                                           retry the request.
-  -----------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
-## Assumptions and Scope
-
--   **Authentication:** Authentication is mocked. The app starts with a
-    default user and supports switching between seeded users. Requests
-    identify the selected user through `X-User-Id`. A user can act as a
-    host when they own a listing.
--   **Payments:** Checkout is simulated. The form validates input
-    format, and card details are neither stored nor sent to a payment
-    processor.
--   **Messaging, language, and currency:** These controls are
-    placeholders marked as coming soon.
--   **Listing photos:** Hosts provide photo URLs. Cloud upload is not
-    implemented.
--   **Demo data and media:** Listing images use stock photo URLs from
-    [Unsplash](https://unsplash.com) under its applicable license.
-    Profile images use generic placeholder avatars from `pravatar.cc`.
-    Names, descriptions, bookings, reviews, and other sample records are
-    fictional.
--   **Currency and geography:** Prices are represented as whole-number
-    Indian rupees, and listings are located in India.
--   **Fees:** Hosts configure cleaning fees. The guest service fee is
-    14% of the nightly subtotal. Taxes are not included.
--   **Cancellations:** Guests can cancel until the day before check-in
-    for a full refund in the demo's business rules. Trips that have
-    started cannot be cancelled.
--   **Booking confirmation:** Bookings are confirmed immediately without
-    host approval. Hosts cannot book their own listings.
--   **Reviews:** Reviews are available only after completed stays, with
-    one review permitted per booking.
--   **Dates:** Booking dates are treated as calendar dates without
-    time-zone conversion. Check-in and check-out times are displayed as
-    house rules.
--   **Sleeping arrangements:** The "Where you'll sleep" section is
-    optional. If bedroom details are provided, each bedroom must be
-    described.
--   **Location accuracy:** Hosts enter a city, state, and
-    latitude/longitude. A quick-fill list of Indian cities is provided,
-    and maps display an approximate area rather than an exact address.
--   **Schema changes:** Database migrations are not configured. After
-    model changes, delete `airbnb.db` and restart the backend to create
-    a fresh seeded database.
-
-------------------------------------------------------------------------
-
-## Challenges and Implementation Notes
-
--   **Reservation concurrency:** An application-level availability check
-    can be affected by race conditions. A database trigger provides a
-    second validation layer, and concurrent requests were tested with
-    the service check disabled.
--   **Interface fidelity:** The UI recreates key marketplace patterns,
-    including the search header that compacts on scroll, a two-month
-    date-range picker with unavailable nights, and mobile-specific
-    navigation and reservation controls.
--   **Shareable search state:** Query parameters preserve filters,
-    dates, and pagination across refreshes and browser navigation.
--   **Theme consistency:** A pre-render theme script reduces flashes
-    during dark-mode initialization, and map styling follows the active
-    theme.
--   **SQLite deployment:** The deployed backend requires persistent
-    storage so the database file survives redeployments. Railway is
-    configured with a persistent volume for this purpose.
-
-## Known Limitations
-
--   Authentication and authorization are simulated; anyone with access
-    to the app can switch between seeded users.
--   Listing photos must be supplied as URLs. Broken URLs fall back to a
-    placeholder.
--   Real payments, refunds, messaging, and host approval workflows are
-    not implemented.
--   Database migrations (for example, Alembic) are not configured;
-    schema changes require a fresh database.
--   There is no automated test suite yet. Verification has been
-    performed manually using a checklist and ad hoc API scripts.
--   SQLite permits only one writer at a time, making it suitable for
-    this demo but not an ideal choice for high-concurrency production
-    workloads.
--   Free-tier hosting may suspend idle services, increasing latency for
-    the first request after inactivity.
-
-## Potential Improvements
-
--   Implement real sign-up and authentication using JWT or OAuth, with
-    role and ownership checks enforced throughout the API.
--   Add cloud photo storage (for example, Cloudinary or Amazon S3) with
-    drag-and-drop ordering.
--   Introduce guest-host messaging and booking requests that hosts can
-    approve or decline.
--   Integrate a payment gateway in test mode, such as Razorpay or
-    Stripe, with refund handling.
--   Support weekend and seasonal pricing, weekly discounts, and
-    minimum-stay rules.
--   Add map-based search that updates results as the map moves, plus
-    landmark-based search.
--   Migrate to PostgreSQL, add Alembic migrations, and implement
-    automated API and end-to-end tests with pytest and Playwright.
+### Design decisions
+
+| Decision | Why |
+| :-- | :-- |
+| One `users` table for guests and hosts | The same person can do both; a user is a host because they own listings |
+| Price snapshot on `bookings` | Guests keep the price they booked at, even if the host changes it later |
+| Soft delete (`listings.is_active`) | Deleting hides the listing and cancels upcoming stays, but keeps past trips, reviews and earnings |
+| Ratings computed with `AVG()` | No stored number that can drift out of sync with the reviews |
+| `reviews.booking_id` is UNIQUE | One review per stay, only from someone who stayed |
+| Composite primary keys on `listing_amenities`, `wishlist_items` | The database itself blocks duplicate links |
+| CHECK constraints | Positive prices and guest counts, `check_out > check_in`, rating 1–5, valid status |
+| Overlap trigger + index on `(listing_id, check_in, check_out)` | Double bookings are impossible; availability checks stay fast |
+| `PRAGMA foreign_keys=ON` on every connection | SQLite ignores foreign keys unless this is switched on |
+| `ON DELETE CASCADE` for images, bedrooms, amenity links, wishlist items | These rows mean nothing without their parent |
+| Images and bedrooms in their own tables, with `position` | Ordered galleries (position 0 is the cover) and any number of bedrooms |
+
+### Seed data
+
+Seeded automatically when the database is empty. A fixed random seed makes it reproducible, and dates are relative to today, so there are always past stays with reviews and upcoming stays that block the calendar.
+
+| Users | Listings | Images | Bedrooms | Bookings | Reviews | Wishlist items |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 12 (6 hosts, 6 guests) | 32 in 28 cities | 195 (unique covers) | 67 | 212 (66 upcoming) | 122 | 21 |
+
+Prices range from ₹2,600 to ₹18,500 a night across 7 property types and 8 categories.
+
+---
+
+## API Overview
+
+Base URL `http://localhost:8000` · full interactive docs at `/docs` · 🔒 = needs the `X-User-Id` header
+
+| Method | Endpoint | Description |
+| :-- | :-- | :-- |
+| `GET` | `/api/health` | Health check (also pings the database) |
+| `GET` | `/api/users` | Users for the "Switch user" menu |
+| `GET` | `/api/users/me` 🔒 | Current user |
+| `GET` | `/api/listings` | Search by location, dates, guests, category, type, amenities, price; paginated |
+| `GET` | `/api/listings/filters` | Options for the filter UI |
+| `GET` | `/api/listings/{id}` | Full listing: photos, bedrooms, amenities, host, reviews, rules, booked dates |
+| `GET` | `/api/listings/{id}/quote` | Price breakdown and availability for given dates |
+| `POST` | `/api/bookings` 🔒 | Book a stay → `201`, or `409` if the dates were just taken |
+| `GET` | `/api/bookings/me` 🔒 | My trips |
+| `GET` | `/api/bookings/{id}` 🔒 | One of my bookings |
+| `POST` | `/api/bookings/{id}/cancel` 🔒 | Cancel an upcoming trip |
+| `POST` | `/api/bookings/{id}/review` 🔒 | Review a completed stay → `201` |
+| `GET` | `/api/host/listings` 🔒 | My listings with rating, upcoming bookings, earnings |
+| `POST` | `/api/host/listings` 🔒 | Create a listing → `201` |
+| `GET` | `/api/host/listings/{id}` 🔒 | Current values for the edit form |
+| `PUT` | `/api/host/listings/{id}` 🔒 | Update a listing |
+| `DELETE` | `/api/host/listings/{id}` 🔒 | Soft-delete a listing (cancels upcoming bookings) |
+| `GET` | `/api/host/bookings` 🔒 | Reservations on my listings (`listing_id`, `when` filters) |
+| `GET` | `/api/wishlist` 🔒 | My saved listings |
+| `GET` | `/api/wishlist/ids` 🔒 | Saved listing IDs (to fill the hearts) |
+| `PUT` | `/api/wishlist/{listing_id}` 🔒 | Save a listing → `204` (idempotent) |
+| `DELETE` | `/api/wishlist/{listing_id}` 🔒 | Remove a listing → `204` (idempotent) |
+
+**Status codes:** `200` OK · `201` created · `204` no content · `400` rule broken (e.g. cancelling a started trip) · `401` missing/unknown user · `403` not allowed · `404` not found or not yours · `409` dates taken · `422` invalid input · `503` database busy, retry
+
+---
+
+## Deployment
+
+| Part | Platform | Settings |
+| :-- | :-- | :-- |
+| Backend | Railway | Root directory `backend` · start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT` · volume mounted at `/data` · `DATABASE_URL=sqlite:////data/airbnb.db` · `ALLOWED_ORIGINS=<vercel-url>` |
+| Frontend | Vercel | Root directory `frontend` · `NEXT_PUBLIC_API_URL=<railway-url>` |
+
+The volume keeps the SQLite file across redeploys. If it is ever empty, the app re-seeds the demo data on startup.
+
+---
+
+## Assumptions
+
+- **Auth is mocked:** a default user is signed in, and you can switch between seeded users. A user counts as a host once they own a listing.
+- **Payment is mocked:** the checkout form only validates the format. Card details are never stored or sent anywhere.
+- **Placeholders:** messaging, language and currency are marked "Coming soon".
+- **Photos by URL:** the brief allows "URL/upload", and cloud upload is not built.
+- **Demo data:** listing photos are free stock photos from [Unsplash](https://unsplash.com) (Unsplash License), and avatars are generic placeholders from pravatar.cc. All names, listings, bookings and reviews are fictional. No real personal data is used.
+- **Money:** whole Indian rupees. The host sets the cleaning fee, and the service fee is 14% of the nightly subtotal. No taxes.
+- **Cancellation:** free until the day before check-in. A trip that has started can't be cancelled.
+- **Bookings** are confirmed instantly (no host approval), and hosts can't book their own listings.
+- **Reviews:** only after a completed stay, one per booking.
+- **Dates** are calendar dates without time zones. Check-in and checkout times are shown as house rules.
+- **Maps** show an approximate area, not the exact address.
+- **No migrations:** after model changes, delete `airbnb.db` and restart.
+
+---
+
+## Challenges and Future Work
+
+### Challenges
+
+- **Concurrent bookings:** an app-level check isn't enough on its own, so a database trigger was added and tested with simultaneous requests.
+- **UI fidelity:** the search bar that morphs on scroll, the two-month date picker with booked nights and same-day turnovers, and separate mobile layouts.
+- **Shareable search state:** filters, dates and pagination live in the URL and survive refresh and Back.
+- **Dark mode:** no flash of the light theme on load, and the map tiles match the theme.
+- **SQLite in production:** it needs a persistent disk, so Railway runs with a mounted volume.
+
+### Known limitations
+
+- No real authentication: anyone can act as any demo user.
+- Photos must be existing URLs; broken links fall back to a placeholder.
+- No real payments, refunds, messaging or host approval flow.
+- No migrations (e.g. Alembic) and no automated test suite. Testing was manual against a checklist, plus ad-hoc API scripts.
+- SQLite allows one writer at a time, which is fine for a demo but not for heavy traffic.
+- Free hosting may sleep when idle, so the first request after a while can be slow.
+
+### Future additions
+
+- Real sign-up and login (JWT or OAuth) with role checks on every route.
+- Photo upload to cloud storage (Cloudinary or S3) with drag-and-drop ordering.
+- Guest ↔ host messaging, and booking requests that hosts approve or decline.
+- A payment gateway in test mode (Razorpay or Stripe) with refunds.
+- Weekend and seasonal pricing, weekly discounts, minimum stays.
+- "Search as I move the map" and landmark search.
+- PostgreSQL with Alembic, plus pytest and Playwright tests.
