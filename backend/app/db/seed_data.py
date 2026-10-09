@@ -81,6 +81,11 @@ ROOM_PHOTOS: dict[str, list[str]] = {
     ],
 }
 
+# House rules that differ from the defaults (no pets, no events, no smoking)
+PET_FRIENDLY_CATEGORIES = {"Countryside", "Cabins", "Amazing views"}
+EVENTS_ALLOWED = {"Infinity pool villa near Lonavala", "Farmhouse with pool in Alibaug"}
+SMOKING_ALLOWED = {"Palolem beach hut with sea view", "Himalayan A-frame by the Parvati river"}
+
 # (name, email, is_superhost, bio). The first 6 own listings (hosts); the rest are guests only.
 USERS = [
     ("Priya Nair", "priya@example.com", True, "Born in Kochi, hosting travellers for 6 years. I love sharing Kerala's food and backwaters."),

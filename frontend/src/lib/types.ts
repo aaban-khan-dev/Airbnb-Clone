@@ -86,6 +86,14 @@ export type ListingDetail = ListingCard & {
   guest_access: string | null;
   other_notes: string | null;
   bedroom_details: Bedroom[];
+  // "Things to know". Times come as "HH:MM:SS".
+  check_in_time: string;
+  checkout_time: string;
+  pets_allowed: boolean;
+  events_allowed: boolean;
+  smoking_allowed: boolean;
+  has_smoke_alarm: boolean;
+  has_co_alarm: boolean;
   bathrooms: number;
   cleaning_fee: number;
   host: Host;
@@ -154,6 +162,13 @@ export type ListingFormValues = {
   guest_access: string;
   other_notes: string;
   bedroom_details: { beds: string; image_url: string }[];
+  check_in_time: string; // "HH:MM"
+  checkout_time: string;
+  pets_allowed: boolean;
+  events_allowed: boolean;
+  smoking_allowed: boolean;
+  has_smoke_alarm: boolean;
+  has_co_alarm: boolean;
 };
 
 export type HostListingSummary = {

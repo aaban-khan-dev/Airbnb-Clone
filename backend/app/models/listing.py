@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -12,6 +12,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    Time,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -67,6 +68,15 @@ class Listing(Base):
     bedrooms: Mapped[int] = mapped_column(Integer)
     beds: Mapped[int] = mapped_column(Integer)
     bathrooms: Mapped[int] = mapped_column(Integer)
+
+    # House rules and safety, shown in "Things to know"
+    check_in_time: Mapped[time] = mapped_column(Time, default=time(14, 0))
+    checkout_time: Mapped[time] = mapped_column(Time, default=time(11, 0))
+    pets_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
+    events_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
+    smoking_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
+    has_smoke_alarm: Mapped[bool] = mapped_column(Boolean, default=True)
+    has_co_alarm: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Soft delete: "deleting" a listing hides it but keeps guests' past bookings intact
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)

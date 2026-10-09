@@ -16,6 +16,7 @@ import { MobileReserveBar } from "@/components/listing-detail/MobileReserveBar";
 import { PhotoGrid } from "@/components/listing-detail/PhotoGrid";
 import { ReviewsSection } from "@/components/listing-detail/ReviewsSection";
 import { SleepSection } from "@/components/listing-detail/SleepSection";
+import { ThingsToKnow } from "@/components/listing-detail/ThingsToKnow";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCurrentUser } from "@/context/UserContext";
 import { Container } from "@/components/ui/Container";
@@ -230,6 +231,7 @@ function ListingPageContent() {
         <ReviewsSection reviews={l.reviews} rating={l.rating} />
         <LocationMap latitude={l.latitude} longitude={l.longitude} label={location} />
         <HostSection host={l.host} reviewCount={l.review_count} />
+        <ThingsToKnow listing={l} checkIn={checkIn} />
       </div>
     </Container>
   );

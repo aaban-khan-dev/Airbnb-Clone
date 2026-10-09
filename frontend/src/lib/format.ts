@@ -37,6 +37,13 @@ export function plural(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? "" : "s"}`;
 }
 
+// "15:00:00" or "15:00" -> "3:00 pm" (Airbnb writes times in lower case)
+export function formatTime(value: string): string {
+  const [hours, minutes] = value.split(":").map(Number);
+  const suffix = hours < 12 ? "am" : "pm";
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${suffix}`;
+}
+
 // "2026-10-17" -> "Sat, 17 Oct 2026"
 export function formatLongDate(value: string): string {
   return format(fromISODate(value), "EEE, d MMM yyyy");

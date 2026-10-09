@@ -91,6 +91,13 @@ def _create_listings(
             bedrooms=bedrooms,
             beds=beds,
             bathrooms=baths,
+            check_in_time=time(rng.choice([13, 14, 15]), 0),
+            checkout_time=time(rng.choice([10, 11]), 0),
+            pets_allowed=category in data.PET_FRIENDLY_CATEGORIES,
+            events_allowed=title in data.EVENTS_ALLOWED,
+            smoking_allowed=title in data.SMOKING_ALLOWED,
+            has_smoke_alarm=rng.random() < 0.85,
+            has_co_alarm=rng.random() < 0.4,
         )
 
         amenity_names = set(data.BASE_AMENITIES) | set(data.CATEGORY_AMENITIES[category])

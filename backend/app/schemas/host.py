@@ -1,3 +1,4 @@
+from datetime import time
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
@@ -46,6 +47,14 @@ class ListingWrite(BaseModel):
     bedrooms: int = Field(ge=0, le=50)
     beds: int = Field(ge=1, le=50)
     bathrooms: int = Field(ge=1, le=50)
+
+    check_in_time: time = time(14, 0)
+    checkout_time: time = time(11, 0)
+    pets_allowed: bool = False
+    events_allowed: bool = False
+    smoking_allowed: bool = False
+    has_smoke_alarm: bool = True
+    has_co_alarm: bool = False
 
     image_urls: list[ImageUrl] = Field(min_length=1, max_length=20)  # first = cover photo
     amenity_ids: list[int] = []

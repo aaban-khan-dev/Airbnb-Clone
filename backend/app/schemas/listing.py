@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -119,6 +119,13 @@ class ListingDetail(ListingCard):
     guest_access: str | None
     other_notes: str | None
     bedroom_details: list[BedroomOut]
+    check_in_time: time
+    checkout_time: time
+    pets_allowed: bool
+    events_allowed: bool
+    smoking_allowed: bool
+    has_smoke_alarm: bool
+    has_co_alarm: bool
     bathrooms: int
     cleaning_fee: int
     host: HostOut

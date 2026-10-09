@@ -10,6 +10,7 @@ import { Counter } from "@/components/ui/Counter";
 import { api } from "@/lib/api";
 import { CATEGORY_ICONS } from "@/lib/categories";
 import { CITY_PRESETS } from "@/lib/cities";
+import { formatTime } from "@/lib/format";
 import type { FilterOptions, ListingFormValues } from "@/lib/types";
 
 export const EMPTY_LISTING: ListingFormValues = {
@@ -34,7 +35,19 @@ export const EMPTY_LISTING: ListingFormValues = {
   guest_access: "",
   other_notes: "",
   bedroom_details: [{ beds: "", image_url: "" }],
+  check_in_time: "14:00",
+  checkout_time: "11:00",
+  pets_allowed: false,
+  events_allowed: false,
+  smoking_allowed: false,
+  has_smoke_alarm: true,
+  has_co_alarm: false,
 };
+
+// Every half hour, "00:00" to "23:30", for the check-in and checkout pickers
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) =>
+  `${String(Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "30" : "00"}`,
+);
 
 type Room = ListingFormValues["bedroom_details"][number];
 
@@ -50,6 +63,8 @@ export function toFormValues(listing: ListingFormValues): ListingFormValues {
     space: listing.space ?? "",
     guest_access: listing.guest_access ?? "",
     other_notes: listing.other_notes ?? "",
+    check_in_time: listing.check_in_time.slice(0, 5), // "14:00:00" -> "14:00"
+    checkout_time: listing.checkout_time.slice(0, 5),
     bedroom_details: resizeRooms(
       listing.bedroom_details.map((room) => ({ beds: room.beds, image_url: room.image_url ?? "" })),
       listing.bedrooms,
@@ -268,6 +283,20 @@ export function ListingForm({
         />
       </Section>
 
+      <Section title="House rules and safety">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TimeField label="Check-in after" value={values.check_in_time} onChange={(v) => set("check_in_time", v)} />
+          <TimeField label="Checkout before" value={values.checkout_time} onChange={(v) => set("checkout_time", v)} />
+        </div>
+        <div className="mt-4 divide-y divide-line">
+          <ToggleRow label="Pets allowed" checked={values.pets_allowed} onChange={(v) => set("pets_allowed", v)} />
+          <ToggleRow label="Events allowed" checked={values.events_allowed} onChange={(v) => set("events_allowed", v)} />
+          <ToggleRow label="Smoking allowed" checked={values.smoking_allowed} onChange={(v) => set("smoking_allowed", v)} />
+          <ToggleRow label="Smoke alarm" checked={values.has_smoke_alarm} onChange={(v) => set("has_smoke_alarm", v)} />
+          <ToggleRow label="Carbon monoxide alarm" checked={values.has_co_alarm} onChange={(v) => set("has_co_alarm", v)} />
+        </div>
+      </Section>
+
       <Section title="Set your price">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <NumberField
@@ -366,6 +395,66 @@ function TextArea({
         className="w-full rounded-lg border border-line-strong bg-canvas px-4 py-3 outline-none focus:border-ink"
       />
     </label>
+  );
+}
+
+function TimeField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm font-semibold">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-line-strong bg-canvas px-4 py-3 outline-none focus:border-ink"
+      >
+        {/* Keep a non-standard saved time (e.g. "14:15") selectable */}
+        {!TIME_OPTIONS.includes(value) && <option value={value}>{formatTime(value)}</option>}
+        {TIME_OPTIONS.map((time) => (
+          <option key={time} value={time}>
+            {formatTime(time)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+// A row with a label and an on/off switch, like Airbnb's listing editor
+function ToggleRow({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between py-4">
+      <span>{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={`relative h-8 w-12 shrink-0 rounded-full transition-colors ${checked ? "bg-ink" : "bg-line-strong"}`}
+      >
+        <span
+          className={`absolute top-1 h-6 w-6 rounded-full bg-canvas shadow transition-transform ${
+            checked ? "translate-x-5" : "translate-x-1"
+          } left-0`}
+        />
+      </button>
+    </div>
   );
 }
 

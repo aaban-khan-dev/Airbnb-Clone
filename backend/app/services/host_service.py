@@ -71,6 +71,13 @@ def to_form(listing: Listing) -> HostListingForm:
         bedrooms=listing.bedrooms,
         beds=listing.beds,
         bathrooms=listing.bathrooms,
+        check_in_time=listing.check_in_time,
+        checkout_time=listing.checkout_time,
+        pets_allowed=listing.pets_allowed,
+        events_allowed=listing.events_allowed,
+        smoking_allowed=listing.smoking_allowed,
+        has_smoke_alarm=listing.has_smoke_alarm,
+        has_co_alarm=listing.has_co_alarm,
         image_urls=[image.url for image in listing.images],
         amenity_ids=[amenity.id for amenity in listing.amenities],
         bedroom_details=[
