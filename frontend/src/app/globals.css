@@ -23,3 +23,11 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
+
+/* Hide the scrollbar on horizontally scrolling rows (category bar) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

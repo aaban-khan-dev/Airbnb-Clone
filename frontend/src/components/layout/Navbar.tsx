@@ -3,11 +3,12 @@
 import { Globe } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { toast } from "sonner";
 
 import { Logo } from "@/components/layout/Logo";
 import { UserMenu } from "@/components/layout/UserMenu";
-import { SearchPill } from "@/components/search/SearchPill";
+import { SearchBar } from "@/components/search/SearchBar";
 import { Container } from "@/components/ui/Container";
 import { useCurrentUser } from "@/context/UserContext";
 
@@ -27,9 +28,10 @@ export function Navbar() {
 
         {/* Search only makes sense on the guest side */}
         {!inHostMode && (
-          <div className="hidden md:block">
-            <SearchPill />
-          </div>
+          // SearchBar reads the URL's search params, which needs a Suspense boundary
+          <Suspense>
+            <SearchBar />
+          </Suspense>
         )}
 
         <div className="flex flex-1 items-center justify-end gap-1">

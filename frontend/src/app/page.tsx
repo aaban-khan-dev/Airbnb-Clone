@@ -1,18 +1,33 @@
 "use client";
 
-import { Container } from "@/components/ui/Container";
-import { useCurrentUser } from "@/context/UserContext";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-// Temporary home page. Phase 3 replaces it with the listings grid.
+import { ListingResults } from "@/components/listings/ListingResults";
+import { CategoryBar } from "@/components/search/CategoryBar";
+import { Container } from "@/components/ui/Container";
+import { filtersToQuery, parseFilters } from "@/lib/search";
+
+// useSearchParams needs a Suspense boundary so Next.js can pre-render the page shell
 export default function HomePage() {
-  const { currentUser, loading } = useCurrentUser();
+  return (
+    <Suspense>
+      <Home />
+    </Suspense>
+  );
+}
+
+function Home() {
+  const searchParams = useSearchParams();
+  const filters = parseFilters(searchParams);
 
   return (
-    <Container className="py-12">
-      <h1 className="text-2xl font-semibold">
-        {loading ? "Loading…" : `Welcome, ${currentUser?.name ?? "guest"}`}
-      </h1>
-      <p className="mt-2 text-muted">The listings grid arrives in Phase 3.</p>
-    </Container>
+    <>
+      <CategoryBar />
+      <Container>
+        {/* A new key whenever the search changes = fresh results, starting at page 1 */}
+        <ListingResults key={filtersToQuery(filters)} filters={filters} />
+      </Container>
+    </>
   );
 }
