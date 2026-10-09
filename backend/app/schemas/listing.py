@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -77,3 +77,69 @@ class FilterOptions(BaseModel):
     amenities: list[AmenityOut]
     min_price: int
     max_price: int
+
+
+class HostOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    avatar_url: str | None
+    bio: str | None
+    is_superhost: bool
+    created_at: datetime
+
+
+class ReviewOut(BaseModel):
+    id: int
+    author_name: str
+    author_avatar_url: str | None
+    rating: int
+    comment: str
+    created_at: datetime
+
+
+class DateRangeOut(BaseModel):
+    check_in: date
+    check_out: date
+
+
+class ListingDetail(ListingCard):
+    """Everything the listing page shows. Extends the card with the full details."""
+
+    description: str
+    bathrooms: int
+    cleaning_fee: int
+    host: HostOut
+    amenities: list[AmenityOut]
+    reviews: list[ReviewOut]
+    # Upcoming confirmed stays, so the calendar can cross out booked nights
+    unavailable_ranges: list[DateRangeOut]
+
+
+class QuoteParams(BaseModel):
+    check_in: date
+    check_out: date
+    guests: int = Field(default=1, ge=1)
+
+    @model_validator(mode="after")
+    def check_dates(self):
+        if self.check_in < date.today():
+            raise ValueError("check_in cannot be in the past")
+        if self.check_out <= self.check_in:
+            raise ValueError("check_out must be after check_in")
+        return self
+
+
+class PriceQuote(BaseModel):
+    """Price breakdown for a stay, plus whether those dates are still free."""
+
+    check_in: date
+    check_out: date
+    nights: int
+    nightly_price: int
+    subtotal: int
+    cleaning_fee: int
+    service_fee: int
+    total_price: int
+    available: bool

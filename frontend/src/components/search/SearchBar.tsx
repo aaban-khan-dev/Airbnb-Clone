@@ -2,10 +2,11 @@
 
 import { MapPin, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { Counter } from "@/components/ui/Counter";
 import { type DateRange, DateRangeCalendar } from "@/components/ui/DateRangeCalendar";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import { formatDateRange, fromISODate, plural, toISODate } from "@/lib/format";
 import { filtersToQuery, parseFilters, POPULAR_DESTINATIONS } from "@/lib/search";
 
@@ -30,22 +31,8 @@ export function SearchBar() {
   const [children, setChildren] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Close when clicking outside the search area or pressing Escape
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(event: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false);
-    }
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
+  useClickOutside(rootRef, close, open); // close on outside click or Escape
 
   function openAt(target: Section) {
     // Start the draft from whatever is currently in the URL

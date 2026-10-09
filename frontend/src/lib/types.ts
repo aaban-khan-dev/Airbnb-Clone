@@ -51,3 +51,48 @@ export type FilterOptions = {
   min_price: number;
   max_price: number;
 };
+
+export type Host = {
+  id: number;
+  name: string;
+  avatar_url: string | null;
+  bio: string | null;
+  is_superhost: boolean;
+  created_at: string;
+};
+
+export type Review = {
+  id: number;
+  author_name: string;
+  author_avatar_url: string | null;
+  rating: number;
+  comment: string;
+  created_at: string;
+};
+
+export type DateRangeOut = {
+  check_in: string;
+  check_out: string;
+};
+
+export type ListingDetail = ListingCard & {
+  description: string;
+  bathrooms: number;
+  cleaning_fee: number;
+  host: Host;
+  amenities: Amenity[];
+  reviews: Review[];
+  unavailable_ranges: DateRangeOut[];
+};
+
+export type PriceQuote = {
+  check_in: string;
+  check_out: string;
+  nights: number;
+  nightly_price: number;
+  subtotal: number;
+  cleaning_fee: number;
+  service_fee: number;
+  total_price: number;
+  available: boolean;
+};

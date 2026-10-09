@@ -2,35 +2,21 @@
 
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { useCurrentUser } from "@/context/UserContext";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 export function UserMenu() {
   const { users, currentUser, switchUser } = useCurrentUser();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close the dropdown when clicking anywhere outside it, or pressing Escape
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setOpen(false);
-    }
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
+  useClickOutside(menuRef, close, open); // close on outside click or Escape
 
-  const close = () => setOpen(false);
 
   return (
     <div ref={menuRef} className="relative">

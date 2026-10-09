@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { AmenityIcon } from "@/components/ui/AmenityIcon";
 import { Modal } from "@/components/ui/Modal";
 import { api } from "@/lib/api";
-import { amenityIcon } from "@/lib/amenities";
 import { formatPrice } from "@/lib/format";
 import { filtersToQuery, type SearchFilters } from "@/lib/search";
 import type { FilterOptions, ListingPage } from "@/lib/types";
@@ -124,19 +124,16 @@ function FiltersModalContent({ onClose, filters }: { onClose: () => void; filter
       <section className="pt-8">
         <h3 className="text-xl font-semibold">Amenities</h3>
         <div className="mt-4 flex flex-wrap gap-3">
-          {options?.amenities.map((amenity) => {
-            const Icon = amenityIcon(amenity.icon);
-            return (
-              <Pill
-                key={amenity.id}
-                selected={draft.amenityIds.includes(amenity.id)}
-                onClick={() => setDraft({ ...draft, amenityIds: toggle(draft.amenityIds, amenity.id) })}
-              >
-                <Icon size={18} strokeWidth={1.6} />
-                {amenity.name}
-              </Pill>
-            );
-          })}
+          {options?.amenities.map((amenity) => (
+            <Pill
+              key={amenity.id}
+              selected={draft.amenityIds.includes(amenity.id)}
+              onClick={() => setDraft({ ...draft, amenityIds: toggle(draft.amenityIds, amenity.id) })}
+            >
+              <AmenityIcon iconKey={amenity.icon} size={18} strokeWidth={1.6} />
+              {amenity.name}
+            </Pill>
+          ))}
         </div>
       </section>
     </Modal>

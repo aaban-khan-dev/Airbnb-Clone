@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 // The backend stores an icon key per amenity; this maps it to an icon component
-const AMENITY_ICONS: Record<string, LucideIcon> = {
+export const AMENITY_ICONS: Record<string, LucideIcon> = {
   wifi: Wifi,
   kitchen: CookingPot,
   parking: SquareParking,
@@ -39,6 +39,4 @@ const AMENITY_ICONS: Record<string, LucideIcon> = {
   garden: Sprout,
 };
 
-export function amenityIcon(key: string): LucideIcon {
-  return AMENITY_ICONS[key] ?? Check;
-}
+export const FALLBACK_AMENITY_ICON: LucideIcon = Check;

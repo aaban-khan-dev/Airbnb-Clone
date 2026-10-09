@@ -3,6 +3,8 @@
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { useState } from "react";
 
+import { ListingPhoto } from "@/components/listings/ListingPhoto";
+
 // Photo slider inside a listing card: arrows appear on hover, dots show the position
 export function ImageCarousel({ images, alt }: { images: string[]; alt: string }) {
   const [index, setIndex] = useState(0);
@@ -23,7 +25,13 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt: string }
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {images.map((src, i) => (
-          <Photo key={`${src}-${i}`} src={src} alt={`${alt} photo ${i + 1}`} eager={i === 0} />
+          <ListingPhoto
+            key={`${src}-${i}`}
+            src={src}
+            alt={`${alt} photo ${i + 1}`}
+            eager={i === 0}
+            className="h-full w-full shrink-0"
+          />
         ))}
       </div>
 
@@ -49,21 +57,6 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt: string }
         </div>
       )}
     </div>
-  );
-}
-
-function Photo({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) return <PhotoPlaceholder />;
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      loading={eager ? "eager" : "lazy"}
-      onError={() => setFailed(true)}
-      className="h-full w-full shrink-0 object-cover"
-    />
   );
 }
 
